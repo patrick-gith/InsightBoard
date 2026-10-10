@@ -35,7 +35,7 @@ if os.environ.get("RENDER"):
         raise RuntimeError(
             "DEBUG doit être False en production sur Render."
         )
-        
+
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.environ.get(
@@ -313,7 +313,7 @@ COMPANY_WEBSITE = os.environ.get(
 ANALYSIS_MODE = os.environ.get("ANALYSIS_MODE", "local").strip().lower()
 
 # Requis uniquement si ANALYSIS_MODE == "github"
-GITHUB_TOKEN  = os.environ.get("GH_PAT", "")
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 GITHUB_REPO   = os.environ.get("GITHUB_REPO", "")     # "user/insightboard"
 GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", "main")
 
