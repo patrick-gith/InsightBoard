@@ -1,0 +1,589 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block head_title %}{{ filename }} — {% trans "Dashboard" %}{% endblock %}
+
+{% block content %}
+
+<div id="dashboard-root" class="space-y-10">
+
+  <!-- ============================================ -->
+  <!-- EN-TÊTE (couverture façon PDF)                 -->
+  <!-- ============================================ -->
+  <section class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 animate-fadeInUp">
+    <div class="min-w-0">
+      <p class="text-xs uppercase tracking-wider text-accent-500 dark:text-accent-400 mb-1 font-semibold flex flex-wrap items-center gap-2">
+        <span><i class="fa-solid fa-circle-check mr-1"></i>{% trans "Résultat de l'analyse" %}</span>
+        <span class="px-2 py-0.5 rounded-full bg-accent-50 dark:bg-accent-900/30 text-accent-700 dark:text-accent-300 font-bold">
+          {{ currency.symbol }} · {{ currency.code }}
+        </span>
+      </p>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white">
+        {% trans "Dashboard" %}
+      </h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 truncate">
+        <i class="fa-solid fa-file-csv mr-1.5 text-accent-500"></i>
+        <span class="font-medium">{{ filename }}</span>
+      </p>
+
+      {# ==== Éléments i18n repris du PDF (blocktrans count) ==== #}
+      <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
+        {% blocktrans count n=rows %}{{ n }} ligne{% plural %}{{ n }} lignes{% endblocktrans %}
+        · {% blocktrans count n=kpis_count %}{{ n }} indicateur{% plural %}{{ n }} indicateurs{% endblocktrans %}
+        · {% trans "Devise" %} <strong>{{ currency.symbol }} ({{ currency.code }})</strong>
+      </p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2 no-print">
+      <a href="{% url 'insight:export_pdf' analysis_uuid %}"
+         class="btn-import export-pdf-link inline-flex items-center gap-2 px-4 py-2 rounded-lg
+                bg-accent-600 hover:bg-accent-700 text-white
+                text-sm font-semibold shadow-sm hover:shadow-md
+                hover:-translate-y-0.5 transition-all">
+        <i class="fa-solid fa-file-pdf"></i>
+        <span class="export-label">{% trans "Exporter en PDF" %}</span>
+      </a>
+
+      <a href="{% url 'insight:index' %}#upload"
+         data-scroll="#upload"
+         class="js-scroll-to inline-flex items-center gap-2 px-4 py-2 rounded-lg
+                border border-gray-300 dark:border-gray-700
+                text-sm font-medium text-gray-700 dark:text-gray-200
+                hover:bg-gray-100 dark:hover:bg-gray-800
+                hover:-translate-y-0.5 transition-all">
+        <i class="fa-solid fa-arrow-left"></i>
+        {% trans "Nouveau fichier" %}
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- INTRODUCTION — DEVISE ET CONTEXTE             -->
+  <!-- ============================================ -->
+  <section class="rounded-2xl bg-gray-50 dark:bg-gray-900/40
+                  border border-gray-200 dark:border-gray-800
+                  border-l-4 border-l-accent-500
+                  p-5 sm:p-6 animate-fadeInUp"
+           style="animation-delay:.05s">
+    <div class="flex items-start gap-3">
+      <span class="shrink-0 w-10 h-10 rounded-xl bg-accent-50 dark:bg-accent-900/30
+                   flex items-center justify-center">
+        <i class="fa-solid fa-circle-info text-accent-600 dark:text-accent-400"></i>
+      </span>
+      <div class="flex-1 min-w-0 space-y-2 text-sm text-gray-700 dark:text-gray-300">
+        <p>
+          {% blocktrans %}Ce dashboard présente l'analyse automatisée du fichier
+          <strong>{{ filename }}</strong>. Les données ont été lues, nettoyées et
+          agrégées afin de produire les indicateurs clés et les visualisations ci-dessous.{% endblocktrans %}
+        </p>
+
+        {% if currency.source == "default" %}
+          <p class="text-gray-500 dark:text-gray-400">
+            <i class="fa-solid fa-circle-exclamation text-amber-500 mr-1"></i>
+            {% blocktrans %}Aucune devise n'a été détectée dans le fichier source, le symbole
+            <strong>$</strong> a été utilisé par défaut. Les montants doivent être
+            interprétés dans cette devise.{% endblocktrans %}
+          </p>
+        {% elif currency.source == "column" %}
+          <p class="text-gray-500 dark:text-gray-400">
+            <i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i>
+            {% blocktrans %}Devise détectée depuis la colonne
+            <code class="px-1.5 py-0.5 rounded bg-white dark:bg-gray-800
+                         text-accent-600 dark:text-accent-400 text-xs">{{ schema.currency_col }}</code> :
+            <strong>{{ currency.symbol }} ({{ currency.code }})</strong>.{% endblocktrans %}
+          </p>
+        {% elif currency.source == "header" %}
+          <p class="text-gray-500 dark:text-gray-400">
+            <i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i>
+            {% blocktrans %}Devise déduite d'un symbole présent dans les en-têtes de colonnes :
+            <strong>{{ currency.symbol }} ({{ currency.code }})</strong>.{% endblocktrans %}
+          </p>
+        {% endif %}
+
+        <p class="text-gray-500 dark:text-gray-400 text-xs">
+          <i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i>
+          {% trans "Les valeurs monétaires sont affichées en clair, avec la valeur abrégée en complément (k = milliers, M = millions, G = milliards)." %}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- KPIs — mêmes clés que le PDF                  -->
+  <!-- ============================================ -->
+  <section>
+    <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-2">
+      <i class="fa-solid fa-gauge-high text-accent-500"></i>
+      {% trans "Indicateurs clés" %}
+    </h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 stagger">
+
+            {% for kpi in kpis %}
+        <div class="kpi-card group relative overflow-hidden
+                    rounded-2xl p-5 sm:p-6
+                    bg-white dark:bg-gray-900
+                    border border-gray-200 dark:border-gray-800
+                    shadow-sm hover:shadow-xl hover:-translate-y-1
+                    transition-all duration-300
+                    min-h-[150px] flex flex-col justify-between">
+
+          <span class="absolute left-0 top-0 bottom-0 w-1
+                       {% if kpi.kind == 'amount' %}bg-accent-500
+                       {% elif kpi.kind == 'int' %}bg-amber-500
+                       {% else %}bg-brand-500{% endif %}
+                       opacity-70 group-hover:opacity-100 transition-opacity"></span>
+
+          <div class="flex items-start justify-between gap-3">
+            <p class="text-[7px] sm:text-[9px] uppercase tracking-wider
+                      text-gray-500 dark:text-gray-400 font-semibold leading-tight pr-2">
+              {{ kpi.label }}
+            </p>
+            <span class="shrink-0 w-7 h-7 rounded-xl
+                         {% if kpi.kind == 'amount' %}bg-accent-50 dark:bg-accent-900/30
+                         {% elif kpi.kind == 'int' %}bg-amber-50 dark:bg-amber-900/30
+                         {% else %}bg-brand-50 dark:bg-brand-900/30{% endif %}
+                         flex items-center justify-center
+                         group-hover:scale-110 transition-transform">
+              <i class="fa-solid {{ kpi.icon }}
+                        {% if kpi.kind == 'amount' %}text-accent-600 dark:text-accent-400
+                        {% elif kpi.kind == 'int' %}text-amber-600 dark:text-amber-400
+                        {% else %}text-brand-600 dark:text-brand-400{% endif %}
+                        text-base"></i>
+            </span>
+          </div>
+
+          <div class="mt-3">
+            {% with vlen=kpi.value_display|length %}
+              <p class="kpi-value
+                        text-gray-900 dark:text-white
+                        {% if vlen >= 26 %}size-3xs
+                        {% elif vlen >= 22 %}size-2xs
+                        {% elif vlen >= 18 %}size-xs
+                        {% elif vlen >= 15 %}size-sm
+                        {% elif vlen >= 12 %}size-md
+                        {% elif vlen >= 10 %}size-lg
+                        {% endif %}"
+                 data-target="{{ kpi.raw }}"
+                 data-display="{{ kpi.value_display }}">
+                {{ kpi.value_display }}{% if kpi.unit %}<span class="text-sm font-semibold text-gray-400 ml-1">{{ kpi.unit }}</span>{% endif %}
+              </p>
+            {% endwith %}
+
+            {% if kpi.value_multiple %}
+              <p class="text-xs text-gray-400 dark:text-gray-500 italic mt-1">
+                ≈ {{ kpi.value_multiple }}
+              </p>
+            {% endif %}
+          </div>
+        </div>
+
+      {% empty %}
+        <div class="col-span-full p-6 rounded-2xl bg-amber-50 dark:bg-amber-900/20
+                    border border-amber-200 dark:border-amber-800
+                    text-amber-800 dark:text-amber-200 text-sm">
+          <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+          {% trans "Aucun KPI n'a pu être calculé." %}
+        </div>
+      {% endfor %}
+
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- DÉTAILS TECHNIQUES                            -->
+  <!-- ============================================ -->
+  <section class="animate-fadeInUp">
+    <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-2">
+      <i class="fa-solid fa-list-check text-accent-500"></i>
+      {% trans "Détails techniques" %}
+    </h2>
+
+    <div class="rounded-2xl bg-white dark:bg-gray-900
+                border border-gray-200 dark:border-gray-800
+                overflow-hidden">
+      <table class="w-full text-sm">
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+
+          <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+            <td class="px-5 py-3 text-gray-500 dark:text-gray-400 font-medium w-1/2">
+              {% trans "Nombre de lignes traitées" %}
+            </td>
+            <td class="px-5 py-3 text-gray-900 dark:text-white font-semibold">
+              {{ rows }}
+            </td>
+          </tr>
+
+          {% if stats.period_start and stats.period_end %}
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+              <td class="px-5 py-3 text-gray-500 dark:text-gray-400 font-medium">
+                {% trans "Période couverte" %}
+              </td>
+              <td class="px-5 py-3 text-gray-900 dark:text-white font-semibold">
+                {{ stats.period_start }} → {{ stats.period_end }}
+              </td>
+            </tr>
+          {% endif %}
+
+          {% if stats.nb_products is not None %}
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+              <td class="px-5 py-3 text-gray-500 dark:text-gray-400 font-medium">
+                {% trans "Produits distincts" %}
+              </td>
+              <td class="px-5 py-3 text-gray-900 dark:text-white font-semibold">
+                {{ stats.nb_products }}
+              </td>
+            </tr>
+          {% endif %}
+
+          {% if stats.nb_cities is not None %}
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+              <td class="px-5 py-3 text-gray-500 dark:text-gray-400 font-medium">
+                {% trans "Villes / régions distinctes" %}
+              </td>
+              <td class="px-5 py-3 text-gray-900 dark:text-white font-semibold">
+                {{ stats.nb_cities }}
+              </td>
+            </tr>
+          {% endif %}
+
+          {% if stats.min_transaction %}
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+              <td class="px-5 py-3 text-gray-500 dark:text-gray-400 font-medium">
+                {% trans "Transaction minimale" %}
+              </td>
+              <td class="px-5 py-3 text-gray-900 dark:text-white font-semibold">
+                {{ stats.min_transaction }}
+              </td>
+            </tr>
+          {% endif %}
+
+          {% if stats.max_transaction %}
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+              <td class="px-5 py-3 text-gray-500 dark:text-gray-400 font-medium">
+                {% trans "Transaction maximale" %}
+              </td>
+              <td class="px-5 py-3 text-gray-900 dark:text-white font-semibold">
+                {{ stats.max_transaction }}
+              </td>
+            </tr>
+          {% endif %}
+
+          <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+            <td class="px-5 py-3 text-gray-500 dark:text-gray-400 font-medium">
+              {% trans "Devise utilisée" %}
+            </td>
+            <td class="px-5 py-3 text-gray-900 dark:text-white font-semibold">
+              <span class="inline-flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full
+                             {% if currency.source == 'default' %}bg-amber-500
+                             {% else %}bg-emerald-500{% endif %}"></span>
+                {{ currency.symbol }} ({{ currency.code }})
+              </span>
+              <span class="block text-xs text-gray-400 font-normal mt-0.5">
+                {% if currency.source == "default" %}
+                  {% trans "valeur par défaut" %}
+                {% elif currency.raw %}
+                  {% trans "détectée :" %} <code class="px-1 rounded bg-gray-100 dark:bg-gray-800">{{ currency.raw }}</code>
+                {% endif %}
+              </span>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- GRAPHIQUES                                    -->
+  <!-- ============================================ -->
+  {% if charts %}
+    <section>
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-2">
+        <i class="fa-solid fa-chart-line text-accent-500"></i>
+        {% trans "Visualisations" %}
+      </h2>
+
+      <div class="grid grid-cols-1 gap-6">
+        {% for chart in charts %}
+          <div class="chart-card opacity-0 translate-y-3 rounded-2xl
+                      bg-white dark:bg-gray-900
+                      border border-gray-200 dark:border-gray-800
+                      shadow-sm hover:shadow-md overflow-hidden transition-all"
+               style="transition-delay: {{ forloop.counter0 }}00ms;">
+
+            <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-800">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="w-8 h-8 rounded-lg bg-accent-50 dark:bg-accent-900/30
+                             flex items-center justify-center shrink-0">
+                  <i class="fa-solid fa-chart-simple text-accent-600 dark:text-accent-400 text-sm"></i>
+                </span>
+                <h3 class="font-semibold text-sm text-gray-900 dark:text-white">
+                  {{ chart.title }}
+                </h3>
+              </div>
+              {% if chart.description %}
+                <p class="text-xs text-gray-500 dark:text-gray-400 italic
+                          pl-10 leading-relaxed">
+                  {{ chart.description }}
+                </p>
+              {% endif %}
+            </div>
+
+            <div class="p-3 sm:p-4 overflow-x-auto">{{ chart.html|safe }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% else %}
+    <div class="p-6 rounded-2xl bg-amber-50 dark:bg-amber-900/20
+                border border-amber-200 dark:border-amber-800
+                text-amber-800 dark:text-amber-200 text-sm animate-fadeInUp">
+      <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+      {% trans "Aucune colonne reconnue (date / montant / produit / ville)." %}
+    </div>
+  {% endif %}
+
+  <!-- ============================================ -->
+  <!-- MÉTHODOLOGIE                                  -->
+  <!-- ============================================ -->
+  <section class="animate-fadeInUp">
+    <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-2">
+      <i class="fa-solid fa-book text-accent-500"></i>
+      {% trans "Méthodologie" %}
+    </h2>
+
+    <div class="rounded-2xl bg-gray-50 dark:bg-gray-900/40
+                border border-gray-200 dark:border-gray-800 p-5 sm:p-6">
+      <p class="text-sm text-gray-700 dark:text-gray-300 mb-4 font-semibold">
+        {% trans "Comment ces résultats ont-ils été calculés ?" %}
+      </p>
+
+      <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+        <li class="flex gap-3">
+          <i class="fa-solid fa-coins text-accent-500 mt-0.5 shrink-0"></i>
+          <div>
+            <strong class="text-gray-900 dark:text-white">{% trans "Chiffre d'affaires" %}</strong> —
+            {% blocktrans %}somme de <code class="px-1.5 py-0.5 rounded bg-white dark:bg-gray-800 text-accent-600 dark:text-accent-400 text-xs">quantité × prix unitaire</code>
+            sur l'ensemble des lignes. Si la quantité est absente du fichier, le montant de
+            chaque ligne est considéré comme un total déjà calculé.{% endblocktrans %}
+          </div>
+        </li>
+
+        <li class="flex gap-3">
+          <i class="fa-solid fa-cart-shopping text-accent-500 mt-0.5 shrink-0"></i>
+          <div>
+            <strong class="text-gray-900 dark:text-white">{% trans "Panier moyen" %}</strong> —
+            {% trans "chiffre d'affaires total divisé par le nombre de lignes analysées." %}
+          </div>
+        </li>
+
+        <li class="flex gap-3">
+          <i class="fa-solid fa-boxes-stacked text-amber-500 mt-0.5 shrink-0"></i>
+          <div>
+            <strong class="text-gray-900 dark:text-white">{% trans "Quantité totale" %}</strong> —
+            {% trans "somme de la colonne quantité sur toutes les lignes valides." %}
+          </div>
+        </li>
+
+        <li class="flex gap-3">
+          <i class="fa-solid fa-crown text-emerald-500 mt-0.5 shrink-0"></i>
+          <div>
+            <strong class="text-gray-900 dark:text-white">{% trans "Produit le plus vendu" %}</strong> —
+            {% trans "produit apparaissant le plus fréquemment dans le fichier (en nombre de lignes)." %}
+          </div>
+        </li>
+
+        <li class="flex gap-3">
+          <i class="fa-solid fa-location-dot text-violet-500 mt-0.5 shrink-0"></i>
+          <div>
+            <strong class="text-gray-900 dark:text-white">{% trans "Ville principale" %}</strong> —
+            {% trans "ville apparaissant le plus fréquemment dans le fichier." %}
+          </div>
+        </li>
+
+        <li class="flex gap-3">
+          <i class="fa-solid fa-magnifying-glass text-brand-500 mt-0.5 shrink-0"></i>
+          <div>
+            <strong class="text-gray-900 dark:text-white">{% trans "Détection automatique" %}</strong> —
+            {% trans "les colonnes sont identifiées par correspondance de mots-clés (FR + EN), insensible à la casse. Aucune configuration manuelle n'est requise." %}
+          </div>
+        </li>
+
+        <li class="flex gap-3">
+          <i class="fa-solid fa-arrow-up-9-1 text-accent-500 mt-0.5 shrink-0"></i>
+          <div>
+            <strong class="text-gray-900 dark:text-white">{% trans "Multiples" %}</strong> —
+            <code class="px-1.5 py-0.5 rounded bg-white dark:bg-gray-800 text-accent-600 dark:text-accent-400 text-xs">k</code>
+            {% trans "= milliers," %}
+            <code class="px-1.5 py-0.5 rounded bg-white dark:bg-gray-800 text-accent-600 dark:text-accent-400 text-xs">M</code>
+            {% trans "= millions," %}
+            <code class="px-1.5 py-0.5 rounded bg-white dark:bg-gray-800 text-accent-600 dark:text-accent-400 text-xs">G</code>
+            {% trans "= milliards. Les montants exacts restent affichés en priorité." %}
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- COLONNES DÉTECTÉES                            -->
+  <!-- ============================================ -->
+  <section class="animate-fadeInUp">
+    <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-2">
+      <i class="fa-solid fa-table-columns text-accent-500"></i>
+      {% trans "Colonnes du fichier source" %}
+    </h2>
+
+    <div class="rounded-2xl bg-gray-50 dark:bg-gray-900/40
+                border border-gray-200 dark:border-gray-800 p-5">
+      <ul class="flex flex-wrap gap-2">
+        {% for col in columns %}
+          <li class="px-3 py-1 rounded-full text-xs font-medium transition-all
+                     {% if col == schema.date or col == schema.amount or col == schema.quantity or col == schema.product or col == schema.city or col == schema.revenue %}
+                       bg-accent-100 dark:bg-accent-900/40
+                       text-accent-700 dark:text-accent-300
+                       ring-2 ring-accent-300/60 dark:ring-accent-700/60
+                       font-bold
+                     {% else %}
+                       bg-white dark:bg-gray-800
+                       text-gray-600 dark:text-gray-300
+                       border border-gray-200 dark:border-gray-700
+                     {% endif %}
+                     hover:scale-105">
+            {{ col }}
+          </li>
+        {% endfor %}
+      </ul>
+
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-3">
+        <i class="fa-solid fa-circle-info mr-1 text-accent-500"></i>
+        {% trans "Les colonnes surlignées en rouge ont été utilisées pour les calculs (date, montant, quantité, produit, ville, CA)." %}
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- PIED DE PAGE INFO                             -->
+  <!-- ============================================ -->
+  <div class="text-center text-xs text-gray-400 dark:text-gray-500 pt-4 border-t border-gray-200 dark:border-gray-800 no-print">
+    <i class="fa-solid fa-shield-halved mr-1"></i>
+    {% trans "Rapport généré automatiquement par InsightBoard · Ce document est confidentiel." %}
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+<style>
+   .overflow-wrap-anywhere { overflow-wrap: anywhere; word-break: break-word; }
+
+  /* Valeur principale — base réduite, paliers progressifs */
+  .kpi-value {
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.3px;
+    font-size: 1.35rem;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .kpi-value.size-lg  { font-size: 1.15rem; }
+  .kpi-value.size-md  { font-size: 1rem;    }
+  .kpi-value.size-sm  { font-size: 0.88rem; }
+  .kpi-value.size-xs  { font-size: 0.78rem; }
+  .kpi-value.size-2xs { font-size: 0.7rem;  }
+  .kpi-value.size-3xs { font-size: 0.62rem; }
+
+  @media (min-width: 640px) {
+    .kpi-value          { font-size: 1.55rem; }
+    .kpi-value.size-lg  { font-size: 1.3rem;  }
+    .kpi-value.size-md  { font-size: 1.12rem; }
+    .kpi-value.size-sm  { font-size: 0.98rem; }
+    .kpi-value.size-xs  { font-size: 0.86rem; }
+    .kpi-value.size-2xs { font-size: 0.76rem; }
+    .kpi-value.size-3xs { font-size: 0.68rem; }
+  }
+</style>
+
+<script>
+   // ============================================================
+  // 1. Count-up — uniquement si la valeur primaire est purement
+  //    numérique (chiffres + espaces). On n'anime PAS les valeurs
+  //    monétaires (contiennent $, €, …) ni les valeurs texte.
+  // ============================================================
+  (function () {
+    function animate(el) {
+      const raw = el.dataset.target;
+      if (!raw) return;
+
+      // Récupère le texte AVANT le premier span enfant (= unité)
+      const html = el.innerHTML;
+      const primaryMatch = html.match(/^([^<]*)/);
+      const primary = primaryMatch ? primaryMatch[1].trim() : '';
+
+      // Purement numérique (espaces de milliers tolérés) ?
+      if (!/^[\d\s\u00A0]+$/.test(primary)) return;
+
+      const num = parseFloat(String(raw).replace(/[^\d.-]/g, ''));
+      if (isNaN(num) || !Number.isFinite(num)) return;
+
+      // Unité éventuelle (dans le span)
+      const unitMatch = html.match(/<span[^>]*>([^<]*)<\/span>/);
+      const unit = unitMatch ? unitMatch[1] : '';
+      const hasUnit = !!unit;
+
+      const isInt = Number.isInteger(num);
+      const duration = 900;
+      const start = performance.now();
+
+      function tick(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const val = num * eased;
+        const str = isInt
+          ? Math.round(val).toLocaleString('fr-FR')
+          : val.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
+        el.innerHTML = str + (hasUnit
+          ? `<span class="text-sm font-semibold text-gray-400 ml-1">${unit}</span>`
+          : '');
+        if (t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+    document.querySelectorAll('.kpi-value[data-target]').forEach(animate);
+  })();
+
+  // ============================================================
+  // 2. Révélation progressive des graphiques
+  // ============================================================
+  (function () {
+    const cards = document.querySelectorAll('.chart-card');
+    if (!cards.length) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.remove('opacity-0', 'translate-y-3');
+          e.target.classList.add('opacity-100', 'translate-y-0');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08 });
+    cards.forEach((c) => io.observe(c));
+  })();
+
+  // ============================================================
+  // 3. Feedback au clic sur "Exporter en PDF"
+  // ============================================================
+  document.querySelectorAll('.export-pdf-link').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      btn.classList.add('opacity-60', 'pointer-events-none');
+      const label = btn.querySelector('.export-label');
+      if (label) label.textContent = '{% trans "Génération…" %}';
+      const icon = btn.querySelector('i');
+      if (icon) icon.className = 'fa-solid fa-circle-notch fa-spin';
+    });
+  });
+</script>
+{% endblock %}

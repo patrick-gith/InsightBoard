@@ -1,0 +1,557 @@
+{% load i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f172a">
+  <title>{% block head_title %}InsightBoard{% endblock %} — InsightBoard</title>
+
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',
+              400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',
+              800:'#1e40af',900:'#1e3a8a',
+            },
+            accent: {
+              50:'#fef2f2',100:'#fee2e2',200:'#fecaca',300:'#fca5a5',
+              400:'#f87171',500:'#ef4444',600:'#dc2626',700:'#b91c1c',
+              800:'#991b1b',900:'#7f1d1d',
+            },
+          },
+          fontFamily: { sans: ['Inter','system-ui','sans-serif'] },
+          keyframes: {
+            fadeInUp: { '0%':{opacity:'0',transform:'translateY(12px)'}, '100%':{opacity:'1',transform:'translateY(0)'} },
+            fadeIn:   { '0%':{opacity:'0'}, '100%':{opacity:'1'} },
+            slideInLeft: { '0%':{opacity:'0',transform:'translateX(-16px)'}, '100%':{opacity:'1',transform:'translateX(0)'} },
+            scaleIn:  { '0%':{opacity:'0',transform:'scale(.95)'}, '100%':{opacity:'1',transform:'scale(1)'} },
+            pulseGlow:{ '0%,100%':{boxShadow:'0 0 0 0 rgba(59,130,246,.35)'}, '50%':{boxShadow:'0 0 0 14px rgba(59,130,246,0)'} },
+            shimmer:  { '0%':{backgroundPosition:'-400px 0'}, '100%':{backgroundPosition:'400px 0'} },
+            float:    { '0%,100%':{transform:'translateY(0)'}, '50%':{transform:'translateY(-6px)'} },
+            bounceSubtle: { '0%,100%':{transform:'translateY(0)'}, '50%':{transform:'translateY(-4px)'} },
+            pulseRed: {
+              '0%,100%': { boxShadow: '0 0 0 0 rgba(239,68,68,.55)' },
+              '50%':     { boxShadow: '0 0 0 12px rgba(239,68,68,0)' },
+            },
+            heartbeat: {
+              '0%,100%': { transform: 'scale(1)' },
+              '15%':     { transform: 'scale(1.25)' },
+              '30%':     { transform: 'scale(1)' },
+              '45%':     { transform: 'scale(1.18)' },
+              '60%':     { transform: 'scale(1)' },
+            },
+            shake: {
+              '0%,100%': { transform: 'translateX(0)' },
+              '20%':     { transform: 'translateX(-6px)' },
+              '40%':     { transform: 'translateX(6px)' },
+              '60%':     { transform: 'translateX(-4px)' },
+              '80%':     { transform: 'translateX(4px)' },
+            },
+            gradientX: {
+              '0%,100%': { backgroundPosition: '0% 50%' },
+              '50%':     { backgroundPosition: '100% 50%' },
+            },
+            blinkRed: {
+              '0%,100%': { opacity: '1', transform: 'scale(1)' },
+              '50%':     { opacity: '.45', transform: 'scale(.85)' },
+            },
+            flashHighlight: {
+              '0%'   : { backgroundColor: 'rgba(239,68,68,0)' },
+              '20%'  : { backgroundColor: 'rgba(239,68,68,.10)' },
+              '60%'  : { backgroundColor: 'rgba(239,68,68,.06)' },
+              '100%' : { backgroundColor: 'rgba(239,68,68,0)' },
+            },
+          },
+          animation: {
+            'fadeInUp':    'fadeInUp .45s cubic-bezier(.16,1,.3,1) both',
+            'fadeIn':      'fadeIn .35s ease-out both',
+            'slideInLeft': 'slideInLeft .4s cubic-bezier(.16,1,.3,1) both',
+            'scaleIn':     'scaleIn .35s cubic-bezier(.16,1,.3,1) both',
+            'pulseGlow':   'pulseGlow 2.2s ease-out infinite',
+            'shimmer':     'shimmer 1.6s linear infinite',
+            'float':       'float 3s ease-in-out infinite',
+            'bounceSubtle':'bounceSubtle 1.4s ease-in-out infinite',
+            'pulseRed':    'pulseRed 1.8s ease-out infinite',
+            'heartbeat':   'heartbeat 1.6s ease-in-out infinite',
+            'shake':       'shake .5s ease-in-out 1',
+            'gradientX':   'gradientX 3s ease-in-out infinite',
+            'blinkRed':    'blinkRed 1.1s ease-in-out infinite',
+            'flashHighlight': 'flashHighlight 1.4s ease-out 1',
+          },
+        },
+      },
+    };
+  </script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    (function () {
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
+
+  <style>
+    * { transition: background-color .2s ease, border-color .2s ease, color .2s ease; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+    [id] { scroll-margin-top: 5rem; }
+
+    .dropzone.dragover {
+      border-color: #3b82f6 !important;
+      background: rgba(59,130,246,.06);
+      transform: scale(1.01);
+    }
+
+    /* 🔴 Highlight visible : flash rouge + ring pulsant */
+    .anchor-highlight {
+      position: relative;
+      animation: flashHighlight 1.4s ease-out 1;
+    }
+    .anchor-highlight::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 1rem;
+      border: 2px solid rgba(239,68,68,.55);
+      pointer-events: none;
+      animation: ringPulse 1.4s ease-out 1;
+    }
+    @keyframes ringPulse {
+      0%   { opacity: 0; transform: scale(.98); }
+      30%  { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.02); }
+    }
+
+    .header-accent-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -1px;
+      height: 2px;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        #ef4444 20%,
+        #dc2626 50%,
+        #ef4444 80%,
+        transparent 100%
+      );
+      background-size: 200% 100%;
+      animation: gradientX 3s ease-in-out infinite;
+      opacity: .85;
+      pointer-events: none;
+    }
+
+    .live-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 9999px;
+      background: #ef4444;
+      box-shadow: 0 0 0 0 rgba(239,68,68,.7);
+      animation: pulseRed 1.8s ease-out infinite;
+    }
+
+    input:focus-visible,
+    select:focus-visible,
+    button:focus-visible,
+    a:focus-visible {
+      outline: 2px solid #ef4444;
+      outline-offset: 2px;
+    }
+
+    .btn-import {
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-import::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: 0 0 0 0 rgba(239,68,68,0);
+      transition: box-shadow .3s ease;
+      pointer-events: none;
+    }
+    .btn-import:hover::after {
+      box-shadow: 0 0 0 6px rgba(239,68,68,.18);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+    }
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans antialiased">
+
+  {% if messages %}
+  <div id="alert-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 w-full max-w-md space-y-2 z-50 px-4">
+    {% for message in messages %}
+    <div class="alert-message p-4 rounded-xl shadow-lg text-center text-sm font-medium
+      {% if 'error' in message.tags %}
+        bg-accent-600 text-white animate-shake ring-2 ring-accent-300/60
+      {% elif 'success' in message.tags %}
+        bg-emerald-500 text-white animate-fadeInUp
+      {% elif 'warning' in message.tags %}
+        bg-amber-500 text-white animate-fadeInUp
+      {% else %}
+        bg-blue-500 text-white animate-fadeInUp
+      {% endif %}">
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <header class="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 relative">
+    <span class="header-accent-line"></span>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+
+      <a href="{% url 'insight:index' %}" class="flex items-center gap-2 group relative">
+        <span class="text-2xl group-hover:animate-bounceSubtle">📊</span>
+        <span class="font-extrabold tracking-tight text-gray-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors relative">
+          INSIGHT<span class="text-brand-600 dark:text-brand-400">BOARD</span>
+          <span class="absolute -top-1 -right-2 live-dot" aria-hidden="true"></span>
+        </span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-1">
+        <a href="{% url 'insight:index' %}"
+           class="px-3 py-2 text-sm font-medium rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:-translate-y-0.5 transition-all">
+          <i class="fa-solid fa-chart-line mr-1.5"></i>{% trans "Dashboard" %}
+        </a>
+
+        <a href="{% url 'insight:index' %}#upload"
+           data-scroll="#upload"
+           class="js-scroll-to btn-import ml-2 px-4 py-2 text-sm font-semibold rounded-lg bg-brand-600 hover:bg-accent-600 text-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i>{% trans "Importer un CSV" %}
+        </a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        {% get_current_language as CURRENT_LANGUAGE %}
+        {% get_available_languages as LANGUAGES %}
+
+        <form action="{% url 'set_language' %}" method="post" class="hidden sm:block">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <select name="language" onchange="this.form.submit()"
+                  class="text-sm bg-transparent border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1.5 text-gray-700 dark:text-gray-200 hover:border-accent-500 focus:outline-none focus:ring-2 focus:ring-accent-500/40 cursor-pointer">
+            {% for code, name in LANGUAGES %}
+              <option value="{{ code }}" {% if code == CURRENT_LANGUAGE %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+          </select>
+        </form>
+
+        <button id="theme-toggle" type="button"
+                class="w-9 h-9 rounded-lg border border-gray-300 dark:border-gray-700 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 hover:rotate-12 transition-all"
+                aria-label="{% trans 'Changer de thème' %}">
+          <i id="theme-icon" class="fa-solid fa-moon text-gray-600 dark:text-gray-300"></i>
+        </button>
+
+        <button id="mobile-menu-btn" type="button"
+                class="md:hidden w-9 h-9 rounded-lg border border-gray-300 dark:border-gray-700 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                aria-label="{% trans 'Menu' %}">
+          <i class="fa-solid fa-bars text-gray-600 dark:text-gray-300"></i>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 animate-fadeInUp">
+      <div class="px-4 py-3 space-y-1">
+        <a href="{% url 'insight:index' %}" class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">
+          <i class="fa-solid fa-chart-line mr-2"></i>{% trans "Dashboard" %}
+        </a>
+
+        <a href="{% url 'insight:index' %}#upload"
+           data-scroll="#upload"
+           class="js-scroll-to btn-import block px-3 py-2 rounded-lg bg-brand-600 hover:bg-accent-600 text-white font-semibold transition-colors">
+          <i class="fa-solid fa-cloud-arrow-up mr-2"></i>{% trans "Importer un CSV" %}
+        </a>
+
+        <form action="{% url 'set_language' %}" method="post" class="pt-2">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <select name="language" onchange="this.form.submit()"
+                  class="w-full text-sm bg-transparent border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2">
+            {% for code, name in LANGUAGES %}
+              <option value="{{ code }}" {% if code == CURRENT_LANGUAGE %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+          </select>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div>
+          <h3 class="text-xs font-semibold text-gray-900 dark:text-gray-200 uppercase tracking-wider mb-3">{% trans "Produit" %}</h3>
+          <ul class="space-y-2 text-sm text-gray-500 dark:text-gray-400">
+            <li><a href="{% url 'insight:index' %}" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">{% trans "Dashboard" %}</a></li>
+            <li><a href="{% url 'insight:index' %}#upload" data-scroll="#upload" class="js-scroll-to hover:text-brand-600 dark:hover:text-brand-400 transition-colors">{% trans "Importer" %}</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xs font-semibold text-gray-900 dark:text-gray-200 uppercase tracking-wider mb-3">{% trans "Support" %}</h3>
+          <ul class="space-y-2 text-sm text-gray-500 dark:text-gray-400">
+            <li><a href="mailto:{{ company.email }}" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">{% trans "Contact" %}</a></li>
+            <li><a href="#" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">{% trans "Aide" %}</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xs font-semibold text-gray-900 dark:text-gray-200 uppercase tracking-wider mb-3">{% trans "Légal" %}</h3>
+          <ul class="space-y-2 text-sm text-gray-500 dark:text-gray-400">
+            <li><a href="#" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">{% trans "Confidentialité" %}</a></li>
+            <li><a href="#" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">{% trans "CGU" %}</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xs font-semibold text-gray-900 dark:text-gray-200 uppercase tracking-wider mb-3">{% trans "Entreprise" %}</h3>
+          <ul class="space-y-2 text-sm text-gray-500 dark:text-gray-400">
+            <li class="font-medium text-gray-700 dark:text-gray-300">{{ company.name }}</li>
+            <li>{{ company.address }}</li>
+            <li>{{ company.phone }}</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <p class="text-xs text-gray-500 dark:text-gray-400">
+          © {% now "Y" %} {{ company.name }} — {% trans "Tous droits réservés" %}
+        </p>
+        <p class="text-xs text-gray-400 dark:text-gray-500">
+          {% trans "Conçu avec" %}
+          <span class="inline-block text-accent-500 animate-heartbeat">❤</span>
+          {% trans "et développé avec Django" %}
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Theme toggle
+    (function () {
+      const btn = document.getElementById('theme-toggle');
+      const icon = document.getElementById('theme-icon');
+      const root = document.documentElement;
+      if (!btn || !icon) return;
+      function updateIcon() {
+        if (root.classList.contains('dark')) {
+          icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
+        } else {
+          icon.classList.remove('fa-sun'); icon.classList.add('fa-moon');
+        }
+      }
+      updateIcon();
+      btn.addEventListener('click', () => {
+        root.classList.toggle('dark');
+        localStorage.setItem('theme', root.classList.contains('dark') ? 'dark' : 'light');
+        updateIcon();
+      });
+    })();
+
+    // Mobile menu
+    (function () {
+      const btn = document.getElementById('mobile-menu-btn');
+      const menu = document.getElementById('mobile-menu');
+      if (!btn || !menu) return;
+      btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+    })();
+
+    // Auto-dismiss messages
+    (function () {
+      const container = document.getElementById('alert-container');
+      if (!container) return;
+      setTimeout(() => {
+        container.querySelectorAll('.alert-message').forEach(el => {
+          el.style.transition = 'opacity .5s ease, transform .5s ease';
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(8px)';
+          setTimeout(() => el.remove(), 500);
+        });
+      }, 4000);
+    })();
+
+    // ============================================================
+    // SCROLL INTELLIGENT vers #upload
+    // ============================================================
+    (function () {
+      // Mets DEBUG = true si tu veux voir ce qui se passe dans la console
+      const DEBUG = false;
+
+      const HIGHLIGHT_MS = 1400;
+
+      const prefersReduced = window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      ).matches;
+
+      function log(...args) {
+        if (DEBUG) console.log('[insight-scroll]', ...args);
+      }
+
+      // ----------------------------------------------------------
+      // Scroll "ceinture et bretelles" : scrollIntoView + fallback
+      // ----------------------------------------------------------
+      function scrollToTarget(selector, { updateHash = false } = {}) {
+        const target = document.querySelector(selector);
+        if (!target) {
+          log('cible introuvable :', selector);
+          return false;
+        }
+
+        const headerEl = document.querySelector('header');
+        const headerH  = headerEl ? headerEl.offsetHeight : 0;
+        const extraGap = 24;
+        const targetTop = target.getBoundingClientRect().top + window.pageYOffset;
+        const targetY   = Math.max(0, targetTop - headerH - extraGap);
+
+        log('target top :', targetTop, 'header :', headerH, 'scroll to :', targetY);
+
+        // Méthode 1 : scrollIntoView (respecte scroll-margin-top)
+        try {
+          target.scrollIntoView({
+            behavior: prefersReduced ? 'auto' : 'smooth',
+            block: 'start',
+          });
+        } catch (e) {
+          log('scrollIntoView a échoué :', e);
+        }
+
+        // Méthode 2 (fallback) : window.scrollTo après un court délai
+        // Si scrollIntoView n'a rien fait (page déjà en haut), ça ne casse rien.
+        setTimeout(() => {
+          const currentY = window.pageYOffset;
+          // Si le scrollIntoView a bougé, on ne touche à rien
+          if (Math.abs(currentY - targetY) > 4) {
+            log('fallback scrollTo :', currentY, '→', targetY);
+            window.scrollTo({
+              top: targetY,
+              behavior: prefersReduced ? 'auto' : 'smooth',
+            });
+          }
+        }, 100);
+
+        // Highlight visible
+        target.classList.remove('anchor-highlight');
+        void target.offsetWidth; // force reflow
+        target.classList.add('anchor-highlight');
+        setTimeout(() => target.classList.remove('anchor-highlight'), HIGHLIGHT_MS);
+
+        // Accessibilité : focus sur la cible (sans re-scroller)
+        if (!target.matches('input, textarea, select, button, a')) {
+          target.setAttribute('tabindex', '-1');
+          target.focus({ preventScroll: true });
+        }
+
+        if (updateHash) {
+          history.replaceState(null, '', selector);
+        }
+        return true;
+      }
+
+      // ----------------------------------------------------------
+      // Normalise un chemin pour comparer "/fr" et "/fr/"
+      // ----------------------------------------------------------
+      function normalizePath(p) {
+        if (!p) return '/';
+        // Enlève un éventuel domaine absolu
+        try {
+          if (p.startsWith('http')) {
+            p = new URL(p).pathname;
+          }
+        } catch (_) {}
+        if (!p.startsWith('/')) p = '/' + p;
+        if (!p.endsWith('/')) p = p + '/';
+        return p;
+      }
+
+      // ----------------------------------------------------------
+      // 1. Interception des clics
+      // ----------------------------------------------------------
+      const scrollLinks = document.querySelectorAll('.js-scroll-to');
+      log('liens trouvés :', scrollLinks.length);
+
+      scrollLinks.forEach((link) => {
+        link.addEventListener('click', (e) => {
+          const selector = link.getAttribute('data-scroll');
+          if (!selector) return;
+
+          const href        = link.getAttribute('href') || '';
+          const targetPath  = href.split('#')[0] || '/';
+          const currentPath = window.location.pathname;
+
+          log('clic →', { href, targetPath, currentPath });
+
+          if (normalizePath(targetPath) === normalizePath(currentPath)) {
+            e.preventDefault();
+            scrollToTarget(selector, { updateHash: true });
+          }
+        });
+      });
+
+      // ----------------------------------------------------------
+      // 2. À l'arrivée avec #hash dans l'URL
+      // ----------------------------------------------------------
+      function handleInitialHash() {
+        if (!window.location.hash) return;
+        const selector = window.location.hash;
+        log('hash initial :', selector);
+        setTimeout(() => scrollToTarget(selector), 120);
+      }
+
+      if (document.readyState === 'complete') {
+        handleInitialHash();
+      } else {
+        window.addEventListener('load', handleInitialHash, { once: true });
+      }
+
+      // ----------------------------------------------------------
+      // 3. hashchange (back/forward, lien externe)
+      // ----------------------------------------------------------
+      window.addEventListener('hashchange', () => {
+        if (window.location.hash) {
+          scrollToTarget(window.location.hash);
+        }
+      });
+    })();
+  </script>
+
+  {% block extra_body %}{% endblock %}
+</body>
+</html>
