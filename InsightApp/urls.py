@@ -16,3 +16,4 @@ urlpatterns = [
     path("export/<uuid:uuid>/pdf/", views.export_pdf, name="export_pdf"),
     path("health/", health, name="health"),
 ]
+

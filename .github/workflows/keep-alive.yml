@@ -1,0 +1,16 @@
+name: Keep Render Alive
+
+on:
+  schedule:
+    # Toutes les 5 minutes (avant le timeout de 5 min de Render)
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render service
+        run: |
+          curl -s -o /dev/null -w "HTTP %{http_code}\n" \
+            https://insightboard-fev0.onrender.com/health/ || true
