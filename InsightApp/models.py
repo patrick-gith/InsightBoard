@@ -4,7 +4,13 @@ from django.db import models
 
 
 class Analysis(models.Model):
-    # Identifiant public (URL-safe) pour l'export PDF
+    STATUS_CHOICES = [
+        ("pending",    "En attente"),
+        ("processing", "En cours"),
+        ("completed",  "Terminée"),
+        ("failed",     "Échouée"),
+    ]
+
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     filename = models.CharField(max_length=255)
@@ -13,11 +19,17 @@ class Analysis(models.Model):
         max_digits=16, decimal_places=2, null=True, blank=True
     )
 
-    # CSV brut (pour régénérer le PDF plus tard)
-    csv_data = models.BinaryField(null=True, blank=True)
+    # Mode local  : csv_data rempli, dashboard_data vide
+    # Mode github : csv_data NULL,   dashboard_data rempli par le webhook
+    csv_data       = models.BinaryField(null=True, blank=True)
+    dashboard_data = models.JSONField(default=dict, blank=True)
 
-    # Schéma détecté (JSON : {date, amount, quantity, product, city, revenue})
     schema = models.JSONField(default=dict, blank=True)
+
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default="completed"
+    )
+    pdf_artifact = models.CharField(max_length=64, blank=True, default="")
 
     created_at = models.DateTimeField(auto_now_add=True)
 

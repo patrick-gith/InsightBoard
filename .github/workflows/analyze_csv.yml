@@ -1,0 +1,88 @@
+name: Analyze CSV
+
+on:
+  workflow_dispatch:
+    inputs:
+      analysis_uuid:
+        required: true
+      callback_url:
+        required: true
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Dépendances système (WeasyPrint)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0 \
+            libcairo2 libgdk-pixbuf-2.0-0 libffi-dev
+
+      - name: Dépendances Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lancer l'analyse
+        env:
+          ANALYSIS_MODE: github
+          DEBUG: "False"
+          SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GITHUB_REPO: ${{ github.repository }}
+          GITHUB_BRANCH: ${{ github.ref_name }}
+          WEBHOOK_TOKEN: ${{ secrets.WEBHOOK_TOKEN }}
+        run: |
+          python manage.py run_analysis \
+            "${{ inputs.analysis_uuid }}" \
+            "uploads/${{ inputs.analysis_uuid }}.csv" \
+            "output"
+
+      - name: Uploader le PDF en artefact
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdf-${{ inputs.analysis_uuid }}
+          path: output/report.pdf
+          retention-days: 7
+
+      - name: Récupérer l'ID de l'artefact
+        id: artifact
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          ID=$(gh api "/repos/${{ github.repository }}/actions/artifacts?name=pdf-${{ inputs.analysis_uuid }}" --jq '.artifacts[0].id')
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Notifier Render
+        if: always()
+        run: |
+          STATUS=${{ job.status == 'success' && 'completed' || 'failed' }}
+          curl -fsS -X POST "${{ inputs.callback_url }}" \
+            -H "Content-Type: application/json" \
+            -H "X-Webhook-Token: ${{ secrets.WEBHOOK_TOKEN }}" \
+            -d "{\"analysis_uuid\":\"${{ inputs.analysis_uuid }}\",
+                 \"status\":\"$STATUS\",
+                 \"pdf_artifact\":\"${{ steps.artifact.outputs.id }}\"}" || true
+
+      - name: Nettoyer le CSV du dépôt
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          SHA=$(gh api "/repos/${{ github.repository }}/contents/uploads/${{ inputs.analysis_uuid }}.csv" --jq .sha 2>/dev/null || echo "")
+          if [ -n "$SHA" ]; then
+            gh api -X DELETE "/repos/${{ github.repository }}/contents/uploads/${{ inputs.analysis_uuid }}.csv" \
+              -f message="cleanup csv ${{ inputs.analysis_uuid }}" \
+              -f sha="$SHA" || true
+          fi

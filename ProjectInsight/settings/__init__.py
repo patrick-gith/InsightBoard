@@ -145,7 +145,7 @@ if DATABASE_URL:
     DATABASES = {
         "default": dj_database_url.parse(
             DATABASE_URL,
-            conn_max_age=600,
+            conn_max_age=0,
             conn_health_checks=True,
         )
     }
@@ -304,3 +304,23 @@ COMPANY_WEBSITE = os.environ.get(
     "COMPANY_WEBSITE",
     "https://insightboard.app",
 )
+
+# ==========================================================
+# MODE D'ANALYSE
+# ==========================================================
+# "local"  → analyse synchrone dans la vue (développement)
+# "github" → analyse déléguée à GitHub Actions (production)
+ANALYSIS_MODE = os.environ.get("ANALYSIS_MODE", "local").strip().lower()
+
+# Requis uniquement si ANALYSIS_MODE == "github"
+GITHUB_TOKEN  = os.environ.get("GITHUB_TOKEN", "")
+GITHUB_REPO   = os.environ.get("GITHUB_REPO", "")     # "user/insightboard"
+GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", "main")
+
+# Sécurité : empêcher le mode github sans token
+if ANALYSIS_MODE == "github" and not GITHUB_TOKEN:
+    raise RuntimeError(
+        "ANALYSIS_MODE=github requiert la variable GITHUB_TOKEN."
+    )
+
+WEBHOOK_TOKEN = os.environ.get("WEBHOOK_TOKEN", "dev-webhook-token")

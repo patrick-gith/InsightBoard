@@ -25,3 +25,10 @@ media/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Uploads temporaires (workflow GitHub Actions)
+uploads/*.csv
+!uploads/.gitkeep
+
+# Sorties du workflow GitHub Actions
+output/
