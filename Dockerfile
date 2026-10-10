@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     chromium \
     chromium-driver \
     curl \
+     gettext \                 # ← AJOUT
     && rm -rf /var/lib/apt/lists/*
 
 # Empêche Python d'écrire des .pyc et force les logs immédiats
@@ -49,6 +50,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libffi-dev \
     chromium \
     chromium-driver \
+    gettext \                 # ← AJOUT CRITIQUE
     && rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
