@@ -23,11 +23,11 @@ DEBUG = os.environ.get("DEBUG", "True").strip().lower() in (
 # En production sur Render, une vraie clé secrète est obligatoire.
 if os.environ.get("RENDER"):
     if (
-        not os.environ.get("SECRET_KEY")
+        not os.environ.get("DJANGO_SECRET_KEY")
         or SECRET_KEY == LOCAL_SECRET_KEY
     ):
         raise RuntimeError(
-            "Configure une vraie SECRET_KEY dans les variables "
+            "Configure une vraie DJANGO_SECRET_KEY dans les variables "
             "d'environnement de Render."
         )
 
@@ -35,7 +35,7 @@ if os.environ.get("RENDER"):
         raise RuntimeError(
             "DEBUG doit être False en production sur Render."
         )
-
+        
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.environ.get(
