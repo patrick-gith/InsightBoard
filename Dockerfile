@@ -69,6 +69,8 @@ RUN adduser --disabled-password --gecos "" django \
     && chown -R django:django /app
 USER django
 
-EXPOSE 8000
-
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "120", "ProjectInsight.wsgi:application"]
+# ⚠️ NE PAS figer le port : Render fournit $PORT dynamiquement
+# ⚠️ --workers 1 pour rester dans les 512 MB du plan gratuit
+# ⚠️ --timeout 120 pour laisser le temps au cold start
+# ⚠️ sh -c pour interpréter ${PORT:-8000}
+CMD ["sh", "-c", "gunicorn ProjectInsight.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 1 --threads 4 --timeout 120 --access-logfile - --error-logfile -"]
