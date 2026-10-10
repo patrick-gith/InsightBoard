@@ -250,12 +250,6 @@
            class="px-3 py-2 text-sm font-medium rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:-translate-y-0.5 transition-all">
           <i class="fa-solid fa-chart-line mr-1.5"></i>{% trans "Dashboard" %}
         </a>
-
-        <a href="{% url 'insight:index' %}#upload"
-           data-scroll="#upload"
-           class="js-scroll-to btn-import ml-2 px-4 py-2 text-sm font-semibold rounded-lg bg-brand-600 hover:bg-accent-600 text-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all">
-          <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i>{% trans "Importer un CSV" %}
-        </a>
       </nav>
 
       <div class="flex items-center gap-2">
@@ -501,30 +495,7 @@
         return p;
       }
 
-      // ----------------------------------------------------------
-      // 1. Interception des clics
-      // ----------------------------------------------------------
-      const scrollLinks = document.querySelectorAll('.js-scroll-to');
-      log('liens trouvés :', scrollLinks.length);
-
-      scrollLinks.forEach((link) => {
-        link.addEventListener('click', (e) => {
-          const selector = link.getAttribute('data-scroll');
-          if (!selector) return;
-
-          const href        = link.getAttribute('href') || '';
-          const targetPath  = href.split('#')[0] || '/';
-          const currentPath = window.location.pathname;
-
-          log('clic →', { href, targetPath, currentPath });
-
-          if (normalizePath(targetPath) === normalizePath(currentPath)) {
-            e.preventDefault();
-            scrollToTarget(selector, { updateHash: true });
-          }
-        });
-      });
-
+      
       // ----------------------------------------------------------
       // 2. À l'arrivée avec #hash dans l'URL
       // ----------------------------------------------------------
