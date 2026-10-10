@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 LOCAL_SECRET_KEY = "django-insecure-local-dev-only-change-this"
 
-SECRET_KEY = os.environ.get("SECRET_KEY", LOCAL_SECRET_KEY)
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", LOCAL_SECRET_KEY)
 
 DEBUG = os.environ.get("DEBUG", "True").strip().lower() in (
     "true", "1", "yes"
@@ -137,7 +137,7 @@ WSGI_APPLICATION = "ProjectInsight.wsgi.application"
 # BASE DE DONNÉES
 # ==========================================================
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
+DATABASE_URL = os.environ.get("NEON_DATABASE_URL")
 
 if DATABASE_URL:
     import dj_database_url
@@ -313,7 +313,7 @@ COMPANY_WEBSITE = os.environ.get(
 ANALYSIS_MODE = os.environ.get("ANALYSIS_MODE", "local").strip().lower()
 
 # Requis uniquement si ANALYSIS_MODE == "github"
-GITHUB_TOKEN  = os.environ.get("GITHUB_TOKEN", "")
+GITHUB_TOKEN  = os.environ.get("GH_PAT", "")
 GITHUB_REPO   = os.environ.get("GITHUB_REPO", "")     # "user/insightboard"
 GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", "main")
 
