@@ -1,13 +1,32 @@
-__pycache__/
-*.pyc
-*.pyo
-.venv/
-venv/
+# Virtualenv
 env/
-.git/
-.gitignore
+venv/
+.venv/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
 .pytest_cache/
-.env
-*.md
-staticfiles/
+.mypy_cache/
+
+# Django
+*.log
 db.sqlite3
+staticfiles/
+media/
+
+# Traductions compilées (seront regénérées dans l'image)
+*.mo
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore

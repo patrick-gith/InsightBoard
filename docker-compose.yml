@@ -1,14 +1,33 @@
 services:
+  db:
+    image: postgres:16-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=insightdb
+      - POSTGRES_USER=guizo
+      - POSTGRES_PASSWORD=1234
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U guizo -d insightdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   web:
     build: .
-    container_name: insightboard-web
-    ports:
-      - "8000:8000"
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
+    ports:
+      - "8000:8000"
     environment:
-      - DJANGO_DEBUG=1
-      - DJANGO_SECRET_KEY=dev-secret-change-me
-      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
-    command: sh -c "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"
-    restart: unless-stopped
+      - DEBUG=True
+      - SECRET_KEY=django-insecure-local-dev-only-change-this
+      - DATABASE_URL=postgres://guizo:1234@db:5432/insightdb
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
