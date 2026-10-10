@@ -1,0 +1,746 @@
+# InsightBoard translations
+# French
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: InsightBoard\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-10 07:58+0100\n"
+"PO-Revision-Date: 2026-10-10 08:00+0100\n"
+"Last-Translator: \n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: InsightApp/templates/pdf/report.html:2
+msgid "InsightBoard · Analyse — Page"
+msgstr "InsightBoard · Analyse — Page"
+
+#: InsightApp/templates/pdf/report.html:183
+msgid "InsightBoard · Business Analytics"
+msgstr "InsightBoard · Business Analytics"
+
+#: InsightApp/templates/pdf/report.html:184
+msgid "Analyse Report"
+msgstr "Rapport d'analyse"
+
+#: InsightApp/templates/pdf/report.html:186
+msgid "Source file:"
+msgstr "Fichier source :"
+
+#: InsightApp/templates/pdf/report.html:187
+msgid "Generated on:"
+msgstr "Généré le :"
+
+#: InsightApp/templates/pdf/report.html:188
+#, python-format
+msgid "%(n)s row"
+msgid_plural "%(n)s rows"
+msgstr[0] "%(n)s ligne"
+msgstr[1] "%(n)s lignes"
+
+#: InsightApp/templates/pdf/report.html:189
+#, python-format
+msgid "%(n)s indicator"
+msgid_plural "%(n)s indicators"
+msgstr[0] "%(n)s indicateur"
+msgstr[1] "%(n)s indicateurs"
+
+#: InsightApp/templates/pdf/report.html:190
+msgid "Currency:"
+msgstr "Devise :"
+
+#: InsightApp/templates/pdf/report.html:199
+#, python-format
+msgid ""
+"This report presents the automated analysis of the file <strong>%(f)s</"
+"strong>, processed by InsightBoard. The data was read, cleaned, and "
+"aggregated to produce the key indicators and visualizations below."
+msgstr ""
+"Ce rapport présente l'analyse automatisée du fichier <strong>%(f)s</"
+"strong>, traité par InsightBoard. Les données ont été lues, nettoyées et "
+"agrégées afin de produire les indicateurs clés et les visualisations "
+"ci-dessous."
+
+#: InsightApp/templates/pdf/report.html:203
+msgid ""
+"No currency was detected in the source file, so the symbol <strong>$</"
+"strong> was used by default. Displayed amounts should be interpreted in this "
+"currency."
+msgstr ""
+"Aucune devise n'a été détectée dans le fichier source, le symbole <strong>$</"
+"strong> a donc été utilisé par défaut. Les montants affichés doivent être "
+"interprétés dans cette devise."
+
+#: InsightApp/templates/pdf/report.html:205
+#, python-format
+msgid ""
+"The currency <strong>%(sym)s (%(code)s)</strong> was detected from the "
+"column \"%(col)s\" (value: <code>%(raw)s</code>)."
+msgstr ""
+"La devise <strong>%(sym)s (%(code)s)</strong> a été détectée depuis la "
+"colonne « %(col)s » (valeur : <code>%(raw)s</code>)."
+
+#: InsightApp/templates/pdf/report.html:207
+#, python-format
+msgid ""
+"The currency <strong>%(sym)s (%(code)s)</strong> was inferred from a symbol "
+"found in the column headers."
+msgstr ""
+"La devise <strong>%(sym)s (%(code)s)</strong> a été déduite d'un symbole "
+"présent dans les en-têtes de colonnes."
+
+#: InsightApp/templates/pdf/report.html:211
+msgid ""
+"Monetary values are shown in full, with a compact form (k = thousand, M = "
+"million, G = billion) provided alongside for quick reading."
+msgstr ""
+"Les valeurs monétaires sont affichées en clair, avec la forme abrégée "
+"(k = millier, M = million, G = milliard) fournie en complément pour une "
+"lecture rapide."
+
+#: InsightApp/templates/pdf/report.html:218
+#: InsightApp/templates/pdf/report.html:220
+msgid "Key indicators"
+msgstr "Indicateurs clés"
+
+#: InsightApp/templates/pdf/report.html:255
+msgid "Technical details"
+msgstr "Détails techniques"
+
+#: InsightApp/templates/pdf/report.html:258
+msgid "Summary of analyzed data"
+msgstr "Résumé des données analysées"
+
+#: InsightApp/templates/pdf/report.html:261
+msgid "Rows processed"
+msgstr "Lignes traitées"
+
+#: InsightApp/templates/pdf/report.html:266
+msgid "Period covered"
+msgstr "Période couverte"
+
+#: InsightApp/templates/pdf/report.html:267
+#, python-format
+msgid "from %(start)s to %(end)s"
+msgstr "du %(start)s au %(end)s"
+
+#: InsightApp/templates/pdf/report.html:272
+msgid "Distinct products"
+msgstr "Produits distincts"
+
+#: InsightApp/templates/pdf/report.html:278
+msgid "Distinct cities / regions"
+msgstr "Villes / régions distinctes"
+
+#: InsightApp/templates/pdf/report.html:284
+msgid "Minimum transaction"
+msgstr "Transaction minimale"
+
+#: InsightApp/templates/pdf/report.html:290
+msgid "Maximum transaction"
+msgstr "Transaction maximale"
+
+#: InsightApp/templates/pdf/report.html:295
+msgid "Currency used"
+msgstr "Devise utilisée"
+
+#: InsightApp/templates/pdf/report.html:299
+msgid "default value"
+msgstr "valeur par défaut"
+
+#: InsightApp/templates/pdf/report.html:301
+msgid "detected:"
+msgstr "détectée :"
+
+#: InsightApp/templates/pdf/report.html:312
+msgid "Visualizations"
+msgstr "Visualisations"
+
+#: InsightApp/templates/pdf/report.html:328
+msgid "Methodology"
+msgstr "Méthodologie"
+
+#: InsightApp/templates/pdf/report.html:331
+msgid "How were these results calculated?"
+msgstr "Comment ces résultats ont-ils été calculés ?"
+
+#: InsightApp/templates/pdf/report.html:334
+msgid ""
+"<strong>Revenue</strong>: sum of <code>quantity × unit price</code> across "
+"all rows. If quantity is missing, each row's amount is treated as an already-"
+"computed total."
+msgstr ""
+"<strong>Chiffre d'affaires</strong> : somme de <code>quantité × prix "
+"unitaire</code> sur l'ensemble des lignes. Si la quantité est absente, le "
+"montant de chaque ligne est considéré comme un total déjà calculé."
+
+#: InsightApp/templates/pdf/report.html:337
+msgid ""
+"<strong>Average order</strong>: total revenue divided by the number of "
+"analyzed rows."
+msgstr ""
+"<strong>Panier moyen</strong> : chiffre d'affaires total divisé par le "
+"nombre de lignes analysées."
+
+#: InsightApp/templates/pdf/report.html:340
+msgid ""
+"<strong>Total quantity</strong>: sum of the quantity column across all valid "
+"rows."
+msgstr ""
+"<strong>Quantité totale</strong> : somme de la colonne quantité sur toutes "
+"les lignes valides."
+
+#: InsightApp/templates/pdf/report.html:343
+msgid ""
+"<strong>Best-selling product</strong>: product appearing most frequently in "
+"the file (count of rows, unweighted)."
+msgstr ""
+"<strong>Produit le plus vendu</strong> : produit apparaissant le plus "
+"fréquemment dans le fichier (en nombre de lignes)."
+
+#: InsightApp/templates/pdf/report.html:346
+msgid "<strong>Top city</strong>: city appearing most frequently in the file."
+msgstr ""
+"<strong>Ville principale</strong> : ville apparaissant le plus fréquemment "
+"dans le fichier."
+
+#: InsightApp/templates/pdf/report.html:349
+msgid ""
+"<strong>Automatic detection</strong>: columns are identified by keyword "
+"matching (FR + EN), case-insensitive. No manual configuration required."
+msgstr ""
+"<strong>Détection automatique</strong> : les colonnes sont identifiées par "
+"correspondance de mots-clés (FR + EN), insensible à la casse. Aucune "
+"configuration manuelle n'est requise."
+
+#: InsightApp/templates/pdf/report.html:352
+msgid ""
+"<strong>Multiples</strong>: <code>k</code> = thousands, <code>M</code> = "
+"millions, <code>G</code> = billions. Exact amounts always remain the primary "
+"display."
+msgstr ""
+"<strong>Multiples</strong> : <code>k</code> = milliers, <code>M</code> = "
+"millions, <code>G</code> = milliards. Les montants exacts restent toujours "
+"affichés en priorité."
+
+#: InsightApp/templates/pdf/report.html:361
+msgid "Source file columns"
+msgstr "Colonnes du fichier source"
+
+#: InsightApp/templates/pdf/report.html:370
+msgid ""
+"Columns highlighted in red were used for calculations: <code>date</code>, "
+"<code>amount</code>, <code>quantity</code>, <code>product</code>, "
+"<code>city</code>, <code>revenue</code>."
+msgstr ""
+"Les colonnes surlignées en rouge ont été utilisées pour les calculs : "
+"<code>date</code>, <code>montant</code>, <code>quantité</code>, "
+"<code>produit</code>, <code>ville</code>, <code>CA</code>."
+
+#: InsightApp/templates/pdf/report.html:375
+msgid "Report automatically generated by InsightBoard."
+msgstr "Rapport généré automatiquement par InsightBoard."
+
+#: InsightApp/templates/pdf/report.html:376
+msgid ""
+"This document is confidential and must not be distributed without "
+"authorization."
+msgstr ""
+"Ce document est confidentiel et ne doit pas être diffusé sans autorisation."
+
+#: InsightApp/views.py:34
+msgid "Lignes"
+msgstr "Lignes"
+
+#: InsightApp/views.py:35 ProjectInsight/templates/dashboard/dashboard.html:367
+msgid "Chiffre d'affaires"
+msgstr "Chiffre d'affaires"
+
+#: InsightApp/views.py:36 ProjectInsight/templates/dashboard/dashboard.html:377
+msgid "Panier moyen"
+msgstr "Panier moyen"
+
+#: InsightApp/views.py:37 ProjectInsight/templates/dashboard/dashboard.html:385
+msgid "Quantité totale"
+msgstr "Quantité totale"
+
+#: InsightApp/views.py:38 ProjectInsight/templates/dashboard/dashboard.html:393
+msgid "Produit le plus vendu"
+msgstr "Produit le plus vendu"
+
+#: InsightApp/views.py:39 ProjectInsight/templates/dashboard/dashboard.html:401
+msgid "Ville principale"
+msgstr "Ville principale"
+
+#: InsightApp/views.py:148 InsightApp/views.py:154
+msgid "Chiffre d'affaires par ville"
+msgstr "Chiffre d'affaires par ville"
+
+#: InsightApp/views.py:149
+msgid ""
+"Répartition du chiffre d'affaires par ville. Les 15 villes les plus "
+"contributrices sont affichées, triées par ordre décroissant."
+msgstr ""
+"Répartition du chiffre d'affaires par ville. Les 15 villes les plus "
+"contributrices sont affichées, triées par ordre décroissant."
+
+#: InsightApp/views.py:161 InsightApp/views.py:165
+msgid "Top 10 produits"
+msgstr "Top 10 produits"
+
+#: InsightApp/views.py:162
+msgid ""
+"Classement des 10 produits générant le chiffre d'affaires le plus élevé."
+msgstr ""
+"Classement des 10 produits générant le chiffre d'affaires le plus élevé."
+
+#: InsightApp/views.py:172 InsightApp/views.py:177
+msgid "Répartition du CA par produit"
+msgstr "Répartition du CA par produit"
+
+#: InsightApp/views.py:173
+msgid ""
+"Poids de chaque produit dans le chiffre d'affaires total. Les produits les "
+"moins significatifs sont regroupés sous « Autres »."
+msgstr ""
+"Poids de chaque produit dans le chiffre d'affaires total. Les produits les "
+"moins significatifs sont regroupés sous « Autres »."
+
+#: InsightApp/views.py:184 InsightApp/views.py:189
+msgid "Évolution du chiffre d'affaires"
+msgstr "Évolution du chiffre d'affaires"
+
+#: InsightApp/views.py:185
+msgid ""
+"Évolution mensuelle du chiffre d'affaires. Chaque point représente le total "
+"des transactions du mois correspondant."
+msgstr ""
+"Évolution mensuelle du chiffre d'affaires. Chaque point représente le total "
+"des transactions du mois correspondant."
+
+#: InsightApp/views.py:215
+msgid "Le formulaire contient des erreurs."
+msgstr "Le formulaire contient des erreurs."
+
+#: InsightApp/views.py:227
+msgid "Impossible de lire le fichier CSV. Vérifiez son encodage et son format."
+msgstr "Impossible de lire le fichier CSV. Vérifiez son encodage et son format."
+
+#: InsightApp/views.py:232
+msgid "Erreur inattendue lors de la lecture du fichier."
+msgstr "Erreur inattendue lors de la lecture du fichier."
+
+#: InsightApp/views.py:236
+msgid "Le fichier CSV est vide."
+msgstr "Le fichier CSV est vide."
+
+#: InsightApp/views.py:265
+#, python-format
+msgid "Analyse terminée : %(count)d ligne traitée."
+msgid_plural "Analyse terminée : %(count)d lignes traitées."
+msgstr[0] "Analyse terminée : %(count)d ligne traitée."
+msgstr[1] "Analyse terminée : %(count)d lignes traitées."
+
+#: InsightApp/views.py:290
+msgid "Les données sources ne sont plus disponibles."
+msgstr "Les données sources ne sont plus disponibles."
+
+#: InsightApp/views.py:297
+msgid "Impossible de régénérer les données."
+msgstr "Impossible de régénérer les données."
+
+#: InsightApp/views.py:301
+msgid "Le fichier source est vide."
+msgstr "Le fichier source est vide."
+
+#: InsightApp/views.py:336
+msgid "La génération du PDF a échoué."
+msgstr "La génération du PDF a échoué."
+
+#: ProjectInsight/templates/base.html:251
+#: ProjectInsight/templates/base.html:293
+#: ProjectInsight/templates/base.html:326
+#: ProjectInsight/templates/dashboard/dashboard.html:4
+#: ProjectInsight/templates/dashboard/dashboard.html:22
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+#: ProjectInsight/templates/base.html:257
+#: ProjectInsight/templates/base.html:299
+msgid "Importer un CSV"
+msgstr "Importer un CSV"
+
+#: ProjectInsight/templates/base.html:278
+msgid "Changer de thème"
+msgstr "Changer de thème"
+
+#: ProjectInsight/templates/base.html:284
+msgid "Menu"
+msgstr "Menu"
+
+#: ProjectInsight/templates/base.html:324
+msgid "Produit"
+msgstr "Produit"
+
+#: ProjectInsight/templates/base.html:327
+msgid "Importer"
+msgstr "Importer"
+
+#: ProjectInsight/templates/base.html:331
+msgid "Support"
+msgstr "Support"
+
+#: ProjectInsight/templates/base.html:333
+msgid "Contact"
+msgstr "Contact"
+
+#: ProjectInsight/templates/base.html:334
+msgid "Aide"
+msgstr "Aide"
+
+#: ProjectInsight/templates/base.html:338
+msgid "Légal"
+msgstr "Légal"
+
+#: ProjectInsight/templates/base.html:340
+msgid "Confidentialité"
+msgstr "Confidentialité"
+
+#: ProjectInsight/templates/base.html:341
+msgid "CGU"
+msgstr "CGU"
+
+#: ProjectInsight/templates/base.html:345
+msgid "Entreprise"
+msgstr "Entreprise"
+
+#: ProjectInsight/templates/base.html:356
+msgid "Tous droits réservés"
+msgstr "Tous droits réservés"
+
+#: ProjectInsight/templates/base.html:359
+msgid "Conçu avec"
+msgstr "Conçu avec"
+
+#: ProjectInsight/templates/base.html:361
+msgid "et développé avec Django"
+msgstr "et développé avec Django"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:16
+msgid "Résultat de l'analyse"
+msgstr "Résultat de l'analyse"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:31
+#, python-format
+msgid "%(n)s ligne"
+msgid_plural "%(n)s lignes"
+msgstr[0] "%(n)s ligne"
+msgstr[1] "%(n)s lignes"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:32
+#, python-format
+msgid "%(n)s indicateur"
+msgid_plural "%(n)s indicateurs"
+msgstr[0] "%(n)s indicateur"
+msgstr[1] "%(n)s indicateurs"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:33
+msgid "Devise"
+msgstr "Devise"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:44
+msgid "Exporter en PDF"
+msgstr "Exporter en PDF"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:55
+msgid "Nouveau fichier"
+msgstr "Nouveau fichier"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:75
+#, python-format
+msgid ""
+"Ce dashboard présente l'analyse automatisée du fichier\n"
+"          <strong>%(filename)s</strong>. Les données ont été lues, nettoyées "
+"et\n"
+"          agrégées afin de produire les indicateurs clés et les "
+"visualisations ci-dessous."
+msgstr ""
+"Ce tableau de bord présente l'analyse automatisée du fichier\n"
+"          <strong>%(filename)s</strong>. Les données ont été lues, nettoyées "
+"et\n"
+"          agrégées afin de produire les indicateurs clés et les "
+"visualisations ci-dessous."
+
+#: ProjectInsight/templates/dashboard/dashboard.html:83
+msgid ""
+"Aucune devise n'a été détectée dans le fichier source, le symbole\n"
+"            <strong>$</strong> a été utilisé par défaut. Les montants "
+"doivent être\n"
+"            interprétés dans cette devise."
+msgstr ""
+"Aucune devise n'a été détectée dans le fichier source, le symbole\n"
+"            <strong>$</strong> a donc été utilisé par défaut. Les montants "
+"doivent être\n"
+"            interprétés dans cette devise."
+
+#: ProjectInsight/templates/dashboard/dashboard.html:90
+#, python-format
+msgid ""
+"Devise détectée depuis la colonne\n"
+"            <code class=\"px-1.5 py-0.5 rounded bg-white dark:bg-gray-800\n"
+"                         text-accent-600 dark:text-accent-400 text-"
+"xs\">%(schema.currency_col)s</code> :\n"
+"            <strong>%(currency.symbol)s (%(currency.code)s)</strong>."
+msgstr ""
+"Devise détectée depuis la colonne\n"
+"            <code class=\"px-1.5 py-0.5 rounded bg-white dark:bg-gray-800\n"
+"                         text-accent-600 dark:text-accent-400 text-"
+"xs\">%(schema.currency_col)s</code> :\n"
+"            <strong>%(currency.symbol)s (%(currency.code)s)</strong>."
+
+#: ProjectInsight/templates/dashboard/dashboard.html:98
+#, python-format
+msgid ""
+"Devise déduite d'un symbole présent dans les en-têtes de colonnes :\n"
+"            <strong>%(currency.symbol)s (%(currency.code)s)</strong>."
+msgstr ""
+"Devise déduite d'un symbole présent dans les en-têtes de colonnes :\n"
+"            <strong>%(currency.symbol)s (%(currency.code)s)</strong>."
+
+#: ProjectInsight/templates/dashboard/dashboard.html:105
+msgid ""
+"Les valeurs monétaires sont affichées en clair, avec la valeur abrégée en "
+"complément (k = milliers, M = millions, G = milliards)."
+msgstr ""
+"Les valeurs monétaires sont affichées en clair, avec la valeur abrégée en "
+"complément (k = milliers, M = millions, G = milliards)."
+
+#: ProjectInsight/templates/dashboard/dashboard.html:117
+msgid "Indicateurs clés"
+msgstr "Indicateurs clés"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:186
+msgid "Aucun KPI n'a pu être calculé."
+msgstr "Aucun KPI n'a pu être calculé."
+
+#: ProjectInsight/templates/dashboard/dashboard.html:199
+msgid "Détails techniques"
+msgstr "Détails techniques"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:210
+msgid "Nombre de lignes traitées"
+msgstr "Nombre de lignes traitées"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:220
+msgid "Période couverte"
+msgstr "Période couverte"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:231
+msgid "Produits distincts"
+msgstr "Produits distincts"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:242
+msgid "Villes / régions distinctes"
+msgstr "Villes / régions distinctes"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:253
+msgid "Transaction minimale"
+msgstr "Transaction minimale"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:264
+msgid "Transaction maximale"
+msgstr "Transaction maximale"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:274
+msgid "Devise utilisée"
+msgstr "Devise utilisée"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:285
+msgid "valeur par défaut"
+msgstr "valeur par défaut"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:287
+msgid "détectée :"
+msgstr "détectée :"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:305
+msgid "Visualisations"
+msgstr "Visualisations"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:344
+msgid "Aucune colonne reconnue (date / montant / produit / ville)."
+msgstr "Aucune colonne reconnue (date / montant / produit / ville)."
+
+#: ProjectInsight/templates/dashboard/dashboard.html:354
+msgid "Méthodologie"
+msgstr "Méthodologie"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:360
+msgid "Comment ces résultats ont-ils été calculés ?"
+msgstr "Comment ces résultats ont-ils été calculés ?"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:368
+msgid ""
+"somme de <code class=\"px-1.5 py-0.5 rounded bg-white dark:bg-gray-800 text-"
+"accent-600 dark:text-accent-400 text-xs\">quantité × prix unitaire</code>\n"
+"            sur l'ensemble des lignes. Si la quantité est absente du "
+"fichier, le montant de\n"
+"            chaque ligne est considéré comme un total déjà calculé."
+msgstr ""
+"somme de <code class=\"px-1.5 py-0.5 rounded bg-white dark:bg-gray-800 text-"
+"accent-600 dark:text-accent-400 text-xs\">quantité × prix unitaire</code>\n"
+"            sur l'ensemble des lignes. Si la quantité est absente du "
+"fichier, le montant de\n"
+"            chaque ligne est considéré comme un total déjà calculé."
+
+#: ProjectInsight/templates/dashboard/dashboard.html:378
+msgid "chiffre d'affaires total divisé par le nombre de lignes analysées."
+msgstr "chiffre d'affaires total divisé par le nombre de lignes analysées."
+
+#: ProjectInsight/templates/dashboard/dashboard.html:386
+msgid "somme de la colonne quantité sur toutes les lignes valides."
+msgstr "somme de la colonne quantité sur toutes les lignes valides."
+
+#: ProjectInsight/templates/dashboard/dashboard.html:394
+msgid ""
+"produit apparaissant le plus fréquemment dans le fichier (en nombre de "
+"lignes)."
+msgstr ""
+"produit apparaissant le plus fréquemment dans le fichier (en nombre de "
+"lignes)."
+
+#: ProjectInsight/templates/dashboard/dashboard.html:402
+msgid "ville apparaissant le plus fréquemment dans le fichier."
+msgstr "ville apparaissant le plus fréquemment dans le fichier."
+
+#: ProjectInsight/templates/dashboard/dashboard.html:409
+msgid "Détection automatique"
+msgstr "Détection automatique"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:410
+msgid ""
+"les colonnes sont identifiées par correspondance de mots-clés (FR + EN), "
+"insensible à la casse. Aucune configuration manuelle n'est requise."
+msgstr ""
+"les colonnes sont identifiées par correspondance de mots-clés (FR + EN), "
+"insensible à la casse. Aucune configuration manuelle n'est requise."
+
+#: ProjectInsight/templates/dashboard/dashboard.html:417
+msgid "Multiples"
+msgstr "Multiples"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:419
+msgid "= milliers,"
+msgstr "= milliers,"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:421
+msgid "= millions,"
+msgstr "= millions,"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:423
+msgid "= milliards. Les montants exacts restent affichés en priorité."
+msgstr "= milliards. Les montants exacts restent affichés en priorité."
+
+#: ProjectInsight/templates/dashboard/dashboard.html:436
+msgid "Colonnes du fichier source"
+msgstr "Colonnes du fichier source"
+
+#: ProjectInsight/templates/dashboard/dashboard.html:462
+msgid ""
+"Les colonnes surlignées en rouge ont été utilisées pour les calculs (date, "
+"montant, quantité, produit, ville, CA)."
+msgstr ""
+"Les colonnes surlignées en rouge ont été utilisées pour les calculs (date, "
+"montant, quantité, produit, ville, CA)."
+
+#: ProjectInsight/templates/dashboard/dashboard.html:472
+msgid ""
+"Rapport généré automatiquement par InsightBoard · Ce document est "
+"confidentiel."
+msgstr ""
+"Rapport généré automatiquement par InsightBoard · Ce document est "
+"confidentiel."
+
+#: ProjectInsight/templates/dashboard/dashboard.html:583
+msgid "Génération…"
+msgstr "Génération…"
+
+#: ProjectInsight/templates/dashboard/home.html:4
+msgid "Accueil"
+msgstr "Accueil"
+
+#: ProjectInsight/templates/dashboard/home.html:18
+msgid "Analyse CSV en quelques secondes"
+msgstr "Analyse CSV en quelques secondes"
+
+#: ProjectInsight/templates/dashboard/home.html:23
+msgid "Transformez votre CSV"
+msgstr "Transformez votre CSV"
+
+#: ProjectInsight/templates/dashboard/home.html:26
+msgid "en dashboard"
+msgstr "en tableau de bord"
+
+#: ProjectInsight/templates/dashboard/home.html:32
+msgid ""
+"Importez un fichier de ventes — InsightBoard détecte automatiquement le "
+"schéma et génère KPIs + graphiques, sans configuration."
+msgstr ""
+"Importez un fichier de ventes — InsightBoard détecte automatiquement le "
+"schéma et génère KPIs + graphiques, sans configuration."
+
+#: ProjectInsight/templates/dashboard/home.html:67
+msgid "Déposez votre fichier ici"
+msgstr "Déposez votre fichier ici"
+
+#: ProjectInsight/templates/dashboard/home.html:70
+msgid "ou cliquez pour parcourir · .csv · 10 Mo max"
+msgstr "ou cliquez pour parcourir · .csv · 10 Mo max"
+
+#: ProjectInsight/templates/dashboard/home.html:109
+msgid "Analyser"
+msgstr "Analyser"
+
+#: ProjectInsight/templates/dashboard/home.html:113
+msgid "Pas de fichier sous la main ? Essayez"
+msgstr "Pas de fichier sous la main ? Essayez"
+
+#: ProjectInsight/templates/dashboard/home.html:133
+msgid "Détection auto"
+msgstr "Détection auto"
+
+#: ProjectInsight/templates/dashboard/home.html:135
+msgid "Date, montant, produit, ville… reconnus sans config."
+msgstr "Date, montant, produit, ville… reconnus sans config."
+
+#: ProjectInsight/templates/dashboard/home.html:146
+msgid "KPIs instantanés"
+msgstr "KPIs instantanés"
+
+#: ProjectInsight/templates/dashboard/home.html:148
+msgid "CA, panier moyen, top produit, top ville."
+msgstr "CA, panier moyen, top produit, top ville."
+
+#: ProjectInsight/templates/dashboard/home.html:159
+msgid "Confidentiel"
+msgstr "Confidentiel"
+
+#: ProjectInsight/templates/dashboard/home.html:161
+msgid "Les fichiers ne sont jamais conservés côté serveur."
+msgstr "Les fichiers ne sont jamais conservés côté serveur."
+
+#: ProjectInsight/templates/dashboard/home.html:176
+msgid "Analyse en cours…"
+msgstr "Analyse en cours…"
+
+#: ProjectInsight/templates/dashboard/home.html:233
+msgid "prêt à analyser"
+msgstr "prêt à analyser"
+
+#: ProjectInsight/templates/dashboard/home.html:272
+msgid "Analyse…"
+msgstr "Analyse…"

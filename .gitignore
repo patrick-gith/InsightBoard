@@ -1,13 +1,27 @@
-__pycache__/
-*.pyc
-*.pyo
-.venv/
-venv/
+# Virtualenv
 env/
-.env
+venv/
+.venv/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
 .pytest_cache/
-.DS_Store
+.mypy_cache/
+
+# Django
 *.log
 db.sqlite3
 staticfiles/
 media/
+
+# Traductions compilées
+*.mo
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
