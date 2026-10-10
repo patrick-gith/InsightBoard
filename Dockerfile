@@ -5,9 +5,10 @@
 # ==========================================================
 FROM python:3.12-slim-bookworm AS builder
 
-# Dépendances système pour WeasyPrint, Kaleido (Chromium), Psycopg2
+# Dépendances système pour WeasyPrint, Kaleido (Chromium), Psycopg2, gettext
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    gettext \
     libpq-dev \
     libpango-1.0-0 \
     libpangoft2-1.0-0 \
@@ -18,7 +19,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     chromium \
     chromium-driver \
     curl \
-     gettext \                 # ← AJOUT
     && rm -rf /var/lib/apt/lists/*
 
 # Empêche Python d'écrire des .pyc et force les logs immédiats
@@ -39,8 +39,9 @@ RUN python -m venv /opt/venv \
 # ==========================================================
 FROM python:3.12-slim-bookworm AS runtime
 
-# Dépendances système RUNTIME uniquement (pas de build-essential, gcc...)
+# Dépendances système RUNTIME (pas de build-essential, gcc...) + gettext
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    gettext \
     libpq-dev \
     libpango-1.0-0 \
     libpangoft2-1.0-0 \
@@ -50,7 +51,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libffi-dev \
     chromium \
     chromium-driver \
-    gettext \                 # ← AJOUT CRITIQUE
     && rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
