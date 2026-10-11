@@ -36,8 +36,8 @@ jobs:
         env:
           ANALYSIS_MODE: github
           DEBUG: "False"
-          SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-          DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}   # ← aligné aussi (voir §2)
+          NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}   # ← nom d'env var = nom lu par settings.py
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           GITHUB_REPO: ${{ github.repository }}
           GITHUB_BRANCH: ${{ github.ref_name }}
