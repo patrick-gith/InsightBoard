@@ -29,6 +29,7 @@ Thumbs.db
 # Uploads temporaires (workflow GitHub Actions)
 # uploads/*.csv
 # !uploads/.gitkeep
+# uploads
 
 # Sorties du workflow GitHub Actions
 output/
