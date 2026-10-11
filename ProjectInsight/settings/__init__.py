@@ -313,7 +313,14 @@ COMPANY_WEBSITE = os.environ.get(
 ANALYSIS_MODE = os.environ.get("ANALYSIS_MODE", "local").strip().lower()
 
 # Requis uniquement si ANALYSIS_MODE == "github"
-GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+# Accepte les deux noms pour éviter les confusions :
+#   - GITHUB_TOKEN : nom standard utilisé dans le code et le workflow
+#   - GH_PAT       : nom que l'on retrouve parfois dans les secrets GitHub
+GITHUB_TOKEN = (
+    os.environ.get("GITHUB_TOKEN")
+    or os.environ.get("GH_PAT")
+    or ""
+)
 GITHUB_REPO   = os.environ.get("GITHUB_REPO", "")     # "user/insightboard"
 GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", "main")
 
