@@ -4,6 +4,9 @@ from __future__ import annotations
 import json
 import logging
 from datetime import datetime
+from django.db import connection
+from django.db.utils import OperationalError
+import time
 
 from django.conf import settings
 from django.contrib import messages
@@ -443,3 +446,30 @@ def _build_stats(df, schema, kpis, currency) -> dict:
             )
 
     return stats
+
+
+
+
+def health(request: HttpRequest) -> JsonResponse:
+    """
+    Endpoint de santé utilisé par keep-alive.yml.
+    Force une requête SQL pour réveiller Neon s'il est endormi.
+    """
+    start = time.monotonic()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            cursor.fetchone()
+    except OperationalError as exc:
+        logger.error("Health: DB inaccessible — %s", exc)
+        return JsonResponse(
+            {"status": "degraded", "db": "down", "error": str(exc)},
+            status=503,
+        )
+
+    latency_ms = int((time.monotonic() - start) * 1000)
+    return JsonResponse({
+        "status": "ok",
+        "db": "up",
+        "latency_ms": latency_ms,
+    })

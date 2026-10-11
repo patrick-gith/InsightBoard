@@ -1,16 +1,42 @@
-name: Keep Render Alive
+name: Keep Render + Neon Alive
 
 on:
   schedule:
-    # Toutes les 5 minutes (avant le timeout de 5 min de Render)
-    - cron: '*/5 * * * *'
+    # Toutes les 3 minutes — sous le seuil de 5 min de Neon
+    - cron: '*/4 * * * *'
   workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
+
     steps:
-      - name: Ping Render service
+      - name: Ping Render (réveille aussi Neon via /health/)
         run: |
-          curl -s -o /dev/null -w "HTTP %{http_code}\n" \
-            https://insightboard-fev0.onrender.com/health/ || true
+          MAX_ATTEMPTS=3
+          for i in $(seq 1 $MAX_ATTEMPTS); do
+            CODE=$(curl -s -o /tmp/resp.json -w "%{http_code}" \
+              --max-time 45 \
+              https://insightboard-fev0.onrender.com/health/ || echo "000")
+
+            echo "Tentative $i/$MAX_ATTEMPTS → HTTP $CODE"
+            if [ -f /tmp/resp.json ]; then
+              cat /tmp/resp.json
+              echo ""
+            fi
+
+            if [ "$CODE" = "200" ]; then
+              echo "✅ Render + Neon OK"
+              exit 0
+            fi
+
+            if [ "$i" -lt "$MAX_ATTEMPTS" ]; then
+              echo "⏳ Attente 10s avant nouvelle tentative…"
+              sleep 10
+            fi
+          done
+
+          echo "⚠️ Health check en échec après $MAX_ATTEMPTS tentatives"
+          echo "   Render ou Neon est probablement en cold start."
+          exit 0   # ne pas faire échouer le workflow
