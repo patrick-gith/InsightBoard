@@ -287,12 +287,6 @@
           <i class="fa-solid fa-chart-line mr-2"></i>{% trans "Dashboard" %}
         </a>
 
-        <a href="{% url 'insight:index' %}#upload"
-           data-scroll="#upload"
-           class="js-scroll-to btn-import block px-3 py-2 rounded-lg bg-brand-600 hover:bg-accent-600 text-white font-semibold transition-colors">
-          <i class="fa-solid fa-cloud-arrow-up mr-2"></i>{% trans "Importer un CSV" %}
-        </a>
-
         <form action="{% url 'set_language' %}" method="post" class="pt-2">
           {% csrf_token %}
           <input type="hidden" name="next" value="{{ request.path }}">
