@@ -38,7 +38,7 @@ class LocalRunner(BaseRunner):
         analysis.rows = len(df)
         analysis.total_revenue = kpis.get("Total revenue")
         analysis.schema = schema
-        analysis.csv_data = content           # ← clé pour export_pdf local
+        analysis.csv_data = content
         analysis.status = "completed"
         analysis.save()
         return "completed"
@@ -99,22 +99,74 @@ class GitHubRunner(BaseRunner):
     def get_dashboard_data(self, analysis):
         return analysis.dashboard_data or None
 
-    def get_pdf_bytes(self, analysis):
+    def get_pdf_bytes(self, analysis) -> bytes | None:
         if not analysis.pdf_artifact:
+            logger.warning("Pas d'artefact PDF pour %s", analysis.uuid)
             return None
+
         url = (
             f"{self.API}/repos/{settings.GITHUB_REPO}"
             f"/actions/artifacts/{analysis.pdf_artifact}/zip"
         )
-        r = requests.get(url, headers=self._headers(), timeout=60)
-        if r.status_code != 200:
-            logger.warning("PDF artefact %s : HTTP %s",
-                           analysis.pdf_artifact, r.status_code)
+
+        # ÉTAPE 1 : GitHub API — obtenir l'URL signée Azure (pas de suivi auto)
+        try:
+            r = requests.get(
+                url,
+                headers=self._headers(),
+                timeout=10,
+                allow_redirects=False,
+                stream=True,
+            )
+        except requests.Timeout:
+            logger.error("Timeout GitHub API artifact %s", analysis.pdf_artifact)
             return None
-        with zipfile.ZipFile(io.BytesIO(r.content)) as z:
-            for name in z.namelist():
-                if name.endswith(".pdf"):
-                    return z.read(name)
+        except requests.RequestException as exc:
+            logger.error("Erreur GitHub API : %s", exc)
+            return None
+
+        if r.status_code == 410:
+            logger.warning("Artefact expiré : %s", analysis.pdf_artifact)
+            return None
+        if r.status_code == 401:
+            logger.error("PAT invalide (401) pour %s", analysis.pdf_artifact)
+            return None
+        if r.status_code == 403:
+            logger.error("PAT sans Actions:Read (403) pour %s", analysis.pdf_artifact)
+            return None
+        if r.status_code not in (200, 302):
+            logger.warning("GitHub HTTP %s pour %s", r.status_code, analysis.pdf_artifact)
+            return None
+
+        # ÉTAPE 2 : Azure Blob — télécharger SANS header Authorization
+        if r.status_code == 302:
+            blob_url = r.headers.get("location")
+            if not blob_url:
+                logger.error("Pas de 'location' dans la redirection 302")
+                return None
+            try:
+                # ⚠️ Aucun header d'auth : Azure utilise la signature dans l'URL
+                r = requests.get(blob_url, timeout=15, stream=True)
+            except requests.RequestException as exc:
+                logger.error("Erreur téléchargement Azure : %s", exc)
+                return None
+            if r.status_code != 200:
+                logger.warning("Azure Blob HTTP %s", r.status_code)
+                return None
+
+        # ÉTAPE 3 : lecture en streaming + décompression
+        try:
+            buf = io.BytesIO()
+            for chunk in r.iter_content(chunk_size=8192):
+                buf.write(chunk)
+            buf.seek(0)
+            with zipfile.ZipFile(buf) as z:
+                for name in z.namelist():
+                    if name.endswith(".pdf"):
+                        return z.read(name)
+        except (zipfile.BadZipFile, OSError) as exc:
+            logger.error("ZIP corrompu : %s", exc)
+            return None
         return None
 
 

@@ -3,6 +3,7 @@ env/
 venv/
 .venv/
 ENV/
+.env.neon/
 
 # Python
 __pycache__/
@@ -32,4 +33,4 @@ Thumbs.db
 # uploads
 
 # Sorties du workflow GitHub Actions
-output/
+output/.env.neon
