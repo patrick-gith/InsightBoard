@@ -132,35 +132,52 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "ProjectInsight.wsgi.application"
 
-
 # ==========================================================
 # BASE DE DONNÉES
 # ==========================================================
 
+import dj_database_url
+
 DATABASE_URL = os.environ.get("NEON_DATABASE_URL")
+DIRECT_URL = os.environ.get("NEON_DIRECT_URL")
+
+# Initialisation du dictionnaire des bases
+DATABASES = {}
+
+# ----------------------------------------------------------
+# Connexion principale
+# ----------------------------------------------------------
 
 if DATABASE_URL:
-    import dj_database_url
-
-    DATABASES = {
-        "default": dj_database_url.parse(
-            DATABASE_URL,
-            conn_max_age=0,
-            conn_health_checks=True,
-        )
-    }
+    DATABASES["default"] = dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age=600,
+        conn_health_checks=True,
+        ssl_require=True,
+    )
 else:
-    # Configuration PostgreSQL locale.
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": "insightdb",
-            "USER": "guizo",
-            "PASSWORD": "1234",
-            "HOST": "localhost",
-            "PORT": "5432",
-        }
+    # PostgreSQL local
+    DATABASES["default"] = {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "insightdb",
+        "USER": "guizo",
+        "PASSWORD": os.environ.get("DB_PASSWORD", "1234"),
+        "HOST": "localhost",
+        "PORT": "5432",
     }
+
+# ----------------------------------------------------------
+# Connexion directe pour les migrations
+# ----------------------------------------------------------
+
+if DIRECT_URL:
+    DATABASES["direct"] = dj_database_url.parse(
+        DIRECT_URL,
+        conn_max_age=600,
+        conn_health_checks=True,
+        ssl_require=True,
+    )
+
 
 
 # ==========================================================
@@ -331,3 +348,20 @@ if ANALYSIS_MODE == "github" and not GITHUB_TOKEN:
     )
 
 WEBHOOK_TOKEN = os.environ.get("WEBHOOK_TOKEN", "dev-webhook-token")
+
+if ANALYSIS_MODE == "github":
+    missing = []
+    for name, value in [
+        ("GITHUB_TOKEN", GITHUB_TOKEN),
+        ("GITHUB_REPO",  GITHUB_REPO),
+        ("WEBHOOK_TOKEN", os.environ.get("WEBHOOK_TOKEN")),
+    ]:
+        if not value:
+            missing.append(name)
+
+    if missing:
+        raise RuntimeError(
+            f"ANALYSIS_MODE=github requiert ces variables "
+            f"d'environnement : {', '.join(missing)}. "
+            f"Configure-les sur Render → Environment."
+        )
