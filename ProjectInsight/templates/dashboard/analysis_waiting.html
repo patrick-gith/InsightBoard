@@ -32,21 +32,40 @@
   const dashUrl   = "{% url 'insight:dashboard' uuid=analysis.uuid %}";
   let elapsed = 0;
 
-  async function poll() {
-    try {
-      const r = await fetch(statusUrl);
-      const d = await r.json();
-      if (d.status === "completed") { window.location.href = dashUrl; return; }
-      if (d.status === "failed") {
-        document.getElementById("waiting-status").innerHTML =
-          '<span class="text-red-500">{% trans "Échec de l\'analyse. Veuillez réessayer." %}</span>';
-        return;
-      }
-    } catch (e) {}
-    elapsed += 5;
-    document.getElementById("waiting-status").textContent = elapsed + "s";
-    setTimeout(poll, 5000);
+ async function poll() {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s max
+
+  try {
+    const r = await fetch(statusUrl, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    const d = await r.json();
+
+    if (d.status === "completed") {
+      window.location.href = dashUrl;
+      return;
+    }
+    if (d.status === "failed") {
+      document.getElementById("waiting-status").innerHTML =
+        '<span class="text-red-500">{% trans "Échec de l\'analyse. Veuillez réessayer." %}</span>';
+      return;
+    }
+  } catch (e) {
+    // Erreur réseau ou timeout → on continue le polling
+    console.warn("Polling erreur, on réessaie…", e);
   }
-  poll();
+
+  elapsed += 5;
+  document.getElementById("waiting-status").textContent = elapsed + "s";
+
+  // Message d'information après 60 secondes
+  if (elapsed === 60) {
+    document.getElementById("waiting-status").innerHTML +=
+      '<br><span class="text-amber-500">Le traitement prend plus de temps que prévu…</span>';
+  }
+
+  setTimeout(poll, 5000);
+}
+poll();
 </script>
 {% endblock %}
