@@ -138,9 +138,7 @@ WSGI_APPLICATION = "ProjectInsight.wsgi.application"
 
 import dj_database_url
 
-DATABASE_URL = os.environ.get("NEON_DATABASE_URL")
-DIRECT_URL = os.environ.get("NEON_DIRECT_URL")
-
+DATABASE_URL = os.environ.get("PRISMA_DATABASE_URL")
 # Initialisation du dictionnaire des bases
 DATABASES = {}
 
@@ -151,7 +149,7 @@ DATABASES = {}
 if DATABASE_URL:
     DATABASES["default"] = dj_database_url.parse(
         DATABASE_URL,
-        conn_max_age=600,
+        conn_max_age=0,
         conn_health_checks=True,
         ssl_require=True,
     )
@@ -165,18 +163,6 @@ else:
         "HOST": "localhost",
         "PORT": "5432",
     }
-
-# ----------------------------------------------------------
-# Connexion directe pour les migrations
-# ----------------------------------------------------------
-
-if DIRECT_URL:
-    DATABASES["direct"] = dj_database_url.parse(
-        DIRECT_URL,
-        conn_max_age=600,
-        conn_health_checks=True,
-        ssl_require=True,
-    )
 
 
 

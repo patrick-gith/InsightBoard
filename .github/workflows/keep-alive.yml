@@ -1,9 +1,9 @@
-name: Keep Render + Neon Alive
+name: Keep Render Alive
 
 on:
   schedule:
-    # Toutes les 3 minutes — sous le seuil de 5 min de Neon
-    - cron: '*/4 * * * *'
+    # Toutes les 5 minutes — sous le seuil d'inactivité de Render (~15 min)
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -12,13 +12,15 @@ jobs:
     timeout-minutes: 3
 
     steps:
-      - name: Ping Render (réveille aussi Neon via /health/)
+      - name: Ping Render via /health/
         run: |
           MAX_ATTEMPTS=3
+          URL="https://insightboard-fev0.onrender.com/health/"
+
           for i in $(seq 1 $MAX_ATTEMPTS); do
             CODE=$(curl -s -o /tmp/resp.json -w "%{http_code}" \
               --max-time 45 \
-              https://insightboard-fev0.onrender.com/health/ || echo "000")
+              "$URL" || echo "000")
 
             echo "Tentative $i/$MAX_ATTEMPTS → HTTP $CODE"
             if [ -f /tmp/resp.json ]; then
@@ -27,7 +29,7 @@ jobs:
             fi
 
             if [ "$CODE" = "200" ]; then
-              echo "✅ Render + Neon OK"
+              echo "✅ Render est éveillé"
               exit 0
             fi
 
@@ -38,5 +40,5 @@ jobs:
           done
 
           echo "⚠️ Health check en échec après $MAX_ATTEMPTS tentatives"
-          echo "   Render ou Neon est probablement en cold start."
+          echo "   Render est probablement en cold start ou en cours de redéploiement."
           exit 0   # ne pas faire échouer le workflow
