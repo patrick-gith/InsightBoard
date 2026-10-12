@@ -36,8 +36,8 @@ jobs:
         env:
           ANALYSIS_MODE: github
           DEBUG: "False"
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}   # ← aligné aussi (voir §2)
-          PRISMA_DATABASE_URL: ${{ secrets.PRISMA_DATABASE_URL }}   # ← nom d'env var = nom lu par settings.py
+          USE_LOCAL_DB: "0"                       # ← pas de DB côté Action non plus
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           GITHUB_REPO: ${{ github.repository }}
           GITHUB_BRANCH: ${{ github.ref_name }}
@@ -68,12 +68,29 @@ jobs:
         if: always()
         run: |
           STATUS=${{ job.status == 'success' && 'completed' || 'failed' }}
-          curl -fsS -X POST "${{ inputs.callback_url }}" \
-            -H "Content-Type: application/json" \
-            -H "X-Webhook-Token: ${{ secrets.WEBHOOK_TOKEN }}" \
-            -d "{\"analysis_uuid\":\"${{ inputs.analysis_uuid }}\",
-                 \"status\":\"$STATUS\",
-                 \"pdf_artifact\":\"${{ steps.artifact.outputs.id }}\"}" || true
+          ARTIFACT_ID="${{ steps.artifact.outputs.id }}"
+
+          if [ -f output/dashboard.json ]; then
+            DASHBOARD_JSON=$(cat output/dashboard.json)
+          else
+            DASHBOARD_JSON="null"
+          fi
+
+          jq -n \
+            --arg uuid     "${{ inputs.analysis_uuid }}" \
+            --arg status   "$STATUS" \
+            --arg artifact "$ARTIFACT_ID" \
+            --argjson dashboard "$DASHBOARD_JSON" \
+            '{
+              analysis_uuid: $uuid,
+              status: $status,
+              pdf_artifact: $artifact,
+              dashboard_data: $dashboard
+            }' \
+          | curl -fsS -X POST "${{ inputs.callback_url }}" \
+              -H "Content-Type: application/json" \
+              -H "X-Webhook-Token: ${{ secrets.WEBHOOK_TOKEN }}" \
+              --data-binary @- || true
 
       - name: Nettoyer le CSV du dépôt
         if: always()

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: InsightBoard\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-11 06:59+0100\n"
+"POT-Creation-Date: 2026-10-12 15:29+0100\n"
 "PO-Revision-Date: 2026-10-10 08:00+0100\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
@@ -15,268 +15,41 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: InsightApp/templates/pdf/report.html:2
-msgid "InsightBoard · Analyse — Page"
-msgstr "InsightBoard · Analysis — Page"
-
-#: InsightApp/templates/pdf/report.html:183
-msgid "InsightBoard · Business Analytics"
-msgstr "InsightBoard · Business Analytics"
-
-#: InsightApp/templates/pdf/report.html:184
-msgid "Analyse Report"
-msgstr "Analysis Report"
-
-#: InsightApp/templates/pdf/report.html:186
-msgid "Source file:"
-msgstr "Source file:"
-
-#: InsightApp/templates/pdf/report.html:187
-msgid "Generated on:"
-msgstr "Generated on:"
-
-#: InsightApp/templates/pdf/report.html:188
-#, python-format
-msgid "%(n)s row"
-msgid_plural "%(n)s rows"
-msgstr[0] "%(n)s row"
-msgstr[1] "%(n)s rows"
-
-#: InsightApp/templates/pdf/report.html:189
-#, python-format
-msgid "%(n)s indicator"
-msgid_plural "%(n)s indicators"
-msgstr[0] "%(n)s indicator"
-msgstr[1] "%(n)s indicators"
-
-#: InsightApp/templates/pdf/report.html:190
-msgid "Currency:"
-msgstr "Currency:"
-
-#: InsightApp/templates/pdf/report.html:199
-#, python-format
-msgid ""
-"This report presents the automated analysis of the file <strong>%(f)s</"
-"strong>, processed by InsightBoard. The data was read, cleaned, and "
-"aggregated to produce the key indicators and visualizations below."
-msgstr ""
-"This report presents the automated analysis of the file <strong>%(f)s</"
-"strong>, processed by InsightBoard. The data was read, cleaned, and "
-"aggregated to produce the key indicators and visualizations below."
-
-#: InsightApp/templates/pdf/report.html:203
-msgid ""
-"No currency was detected in the source file, so the symbol <strong>$</"
-"strong> was used by default. Displayed amounts should be interpreted in this "
-"currency."
-msgstr ""
-"No currency was detected in the source file, so the symbol <strong>$</"
-"strong> was used by default. Displayed amounts should be interpreted in this "
-"currency."
-
-#: InsightApp/templates/pdf/report.html:205
-#, python-format
-msgid ""
-"The currency <strong>%(sym)s (%(code)s)</strong> was detected from the "
-"column \"%(col)s\" (value: <code>%(raw)s</code>)."
-msgstr ""
-"The currency <strong>%(sym)s (%(code)s)</strong> was detected from the "
-"column \"%(col)s\" (value: <code>%(raw)s</code>)."
-
-#: InsightApp/templates/pdf/report.html:207
-#, python-format
-msgid ""
-"The currency <strong>%(sym)s (%(code)s)</strong> was inferred from a symbol "
-"found in the column headers."
-msgstr ""
-"The currency <strong>%(sym)s (%(code)s)</strong> was inferred from a symbol "
-"found in the column headers."
-
-#: InsightApp/templates/pdf/report.html:211
-msgid ""
-"Monetary values are shown in full, with a compact form (k = thousand, M = "
-"million, G = billion) provided alongside for quick reading."
-msgstr ""
-"Monetary values are shown in full, with a compact form (k = thousand, M = "
-"million, G = billion) provided alongside for quick reading."
-
-#: InsightApp/templates/pdf/report.html:218
-#: InsightApp/templates/pdf/report.html:220
-msgid "Key indicators"
-msgstr "Key indicators"
-
-#: InsightApp/templates/pdf/report.html:255
-msgid "Technical details"
-msgstr "Technical details"
-
-#: InsightApp/templates/pdf/report.html:258
-msgid "Summary of analyzed data"
-msgstr "Summary of analyzed data"
-
-#: InsightApp/templates/pdf/report.html:261
-msgid "Rows processed"
-msgstr "Rows processed"
-
-#: InsightApp/templates/pdf/report.html:266
-msgid "Period covered"
-msgstr "Period covered"
-
-#: InsightApp/templates/pdf/report.html:267
-#, python-format
-msgid "from %(start)s to %(end)s"
-msgstr "from %(start)s to %(end)s"
-
-#: InsightApp/templates/pdf/report.html:272
-msgid "Distinct products"
-msgstr "Distinct products"
-
-#: InsightApp/templates/pdf/report.html:278
-msgid "Distinct cities / regions"
-msgstr "Distinct cities / regions"
-
-#: InsightApp/templates/pdf/report.html:284
-msgid "Minimum transaction"
-msgstr "Minimum transaction"
-
-#: InsightApp/templates/pdf/report.html:290
-msgid "Maximum transaction"
-msgstr "Maximum transaction"
-
-#: InsightApp/templates/pdf/report.html:295
-msgid "Currency used"
-msgstr "Currency used"
-
-#: InsightApp/templates/pdf/report.html:299
-msgid "default value"
-msgstr "default value"
-
-#: InsightApp/templates/pdf/report.html:301
-msgid "detected:"
-msgstr "detected:"
-
-#: InsightApp/templates/pdf/report.html:312
-msgid "Visualizations"
-msgstr "Visualizations"
-
-#: InsightApp/templates/pdf/report.html:328
-msgid "Methodology"
-msgstr "Methodology"
-
-#: InsightApp/templates/pdf/report.html:331
-msgid "How were these results calculated?"
-msgstr "How were these results calculated?"
-
-#: InsightApp/templates/pdf/report.html:334
-msgid ""
-"<strong>Revenue</strong>: sum of <code>quantity × unit price</code> across "
-"all rows. If quantity is missing, each row's amount is treated as an already-"
-"computed total."
-msgstr ""
-"<strong>Revenue</strong>: sum of <code>quantity × unit price</code> across "
-"all rows. If quantity is missing, each row's amount is treated as an already-"
-"computed total."
-
-#: InsightApp/templates/pdf/report.html:337
-msgid ""
-"<strong>Average order</strong>: total revenue divided by the number of "
-"analyzed rows."
-msgstr ""
-"<strong>Average order</strong>: total revenue divided by the number of "
-"analyzed rows."
-
-#: InsightApp/templates/pdf/report.html:340
-msgid ""
-"<strong>Total quantity</strong>: sum of the quantity column across all valid "
-"rows."
-msgstr ""
-"<strong>Total quantity</strong>: sum of the quantity column across all valid "
-"rows."
-
-#: InsightApp/templates/pdf/report.html:343
-msgid ""
-"<strong>Best-selling product</strong>: product appearing most frequently in "
-"the file (count of rows, unweighted)."
-msgstr ""
-"<strong>Best-selling product</strong>: product appearing most frequently in "
-"the file (count of rows, unweighted)."
-
-#: InsightApp/templates/pdf/report.html:346
-msgid "<strong>Top city</strong>: city appearing most frequently in the file."
-msgstr "<strong>Top city</strong>: city appearing most frequently in the file."
-
-#: InsightApp/templates/pdf/report.html:349
-msgid ""
-"<strong>Automatic detection</strong>: columns are identified by keyword "
-"matching (FR + EN), case-insensitive. No manual configuration required."
-msgstr ""
-"<strong>Automatic detection</strong>: columns are identified by keyword "
-"matching (FR + EN), case-insensitive. No manual configuration required."
-
-#: InsightApp/templates/pdf/report.html:352
-msgid ""
-"<strong>Multiples</strong>: <code>k</code> = thousands, <code>M</code> = "
-"millions, <code>G</code> = billions. Exact amounts always remain the primary "
-"display."
-msgstr ""
-"<strong>Multiples</strong>: <code>k</code> = thousands, <code>M</code> = "
-"millions, <code>G</code> = billions. Exact amounts always remain the primary "
-"display."
-
-#: InsightApp/templates/pdf/report.html:361
-msgid "Source file columns"
-msgstr "Source file columns"
-
-#: InsightApp/templates/pdf/report.html:370
-msgid ""
-"Columns highlighted in red were used for calculations: <code>date</code>, "
-"<code>amount</code>, <code>quantity</code>, <code>product</code>, "
-"<code>city</code>, <code>revenue</code>."
-msgstr ""
-"Columns highlighted in red were used for calculations: <code>date</code>, "
-"<code>amount</code>, <code>quantity</code>, <code>product</code>, "
-"<code>city</code>, <code>revenue</code>."
-
-#: InsightApp/templates/pdf/report.html:375
-msgid "Report automatically generated by InsightBoard."
-msgstr "Report automatically generated by InsightBoard."
-
-#: InsightApp/templates/pdf/report.html:376
-msgid ""
-"This document is confidential and must not be distributed without "
-"authorization."
-msgstr ""
-"This document is confidential and must not be distributed without "
-"authorization."
-
-#: InsightApp/views.py:39
+#: InsightApp/services/dashboard_builder.py:31
 msgid "Lignes"
 msgstr "Rows"
 
-#: InsightApp/views.py:40 ProjectInsight/templates/dashboard/dashboard.html:367
+#: InsightApp/services/dashboard_builder.py:32
+#: ProjectInsight/templates/dashboard/dashboard.html:367
 msgid "Chiffre d'affaires"
 msgstr "Total revenue"
 
-#: InsightApp/views.py:41 ProjectInsight/templates/dashboard/dashboard.html:377
+#: InsightApp/services/dashboard_builder.py:33
+#: ProjectInsight/templates/dashboard/dashboard.html:377
 msgid "Panier moyen"
 msgstr "Average order"
 
-#: InsightApp/views.py:42 ProjectInsight/templates/dashboard/dashboard.html:385
+#: InsightApp/services/dashboard_builder.py:34
+#: ProjectInsight/templates/dashboard/dashboard.html:385
 msgid "Quantité totale"
 msgstr "Total quantity"
 
-#: InsightApp/views.py:43 ProjectInsight/templates/dashboard/dashboard.html:393
+#: InsightApp/services/dashboard_builder.py:35
+#: ProjectInsight/templates/dashboard/dashboard.html:393
 msgid "Produit le plus vendu"
 msgstr "Best-selling product"
 
-#: InsightApp/views.py:44 ProjectInsight/templates/dashboard/dashboard.html:401
+#: InsightApp/services/dashboard_builder.py:36
+#: ProjectInsight/templates/dashboard/dashboard.html:401
 msgid "Ville principale"
 msgstr "Top city"
 
-#: InsightApp/views.py:136 InsightApp/views.py:141
+#: InsightApp/services/dashboard_builder.py:132
+#: InsightApp/services/dashboard_builder.py:137
 msgid "Chiffre d'affaires par ville"
 msgstr "Revenue by city"
 
-#: InsightApp/views.py:137
+#: InsightApp/services/dashboard_builder.py:133
 msgid ""
 "Répartition du chiffre d'affaires par ville. Les 15 villes les plus "
 "contributrices sont affichées, triées par ordre décroissant."
@@ -284,20 +57,22 @@ msgstr ""
 "Revenue breakdown by city. The 15 top contributing cities are displayed, "
 "sorted in descending order."
 
-#: InsightApp/views.py:146 InsightApp/views.py:149
+#: InsightApp/services/dashboard_builder.py:142
+#: InsightApp/services/dashboard_builder.py:145
 msgid "Top 10 produits"
 msgstr "Top 10 products"
 
-#: InsightApp/views.py:147
+#: InsightApp/services/dashboard_builder.py:143
 msgid ""
 "Classement des 10 produits générant le chiffre d'affaires le plus élevé."
 msgstr "Ranking of the 10 products generating the highest revenue."
 
-#: InsightApp/views.py:154 InsightApp/views.py:158
+#: InsightApp/services/dashboard_builder.py:150
+#: InsightApp/services/dashboard_builder.py:154
 msgid "Répartition du CA par produit"
 msgstr "Revenue breakdown by product"
 
-#: InsightApp/views.py:155
+#: InsightApp/services/dashboard_builder.py:151
 msgid ""
 "Poids de chaque produit dans le chiffre d'affaires total. Les produits les "
 "moins significatifs sont regroupés sous « Autres »."
@@ -305,11 +80,12 @@ msgstr ""
 "Weight of each product in total revenue. Less significant products are "
 "grouped under “Others”."
 
-#: InsightApp/views.py:163 InsightApp/views.py:167
+#: InsightApp/services/dashboard_builder.py:159
+#: InsightApp/services/dashboard_builder.py:163
 msgid "Évolution du chiffre d'affaires"
 msgstr "Revenue over time"
 
-#: InsightApp/views.py:164
+#: InsightApp/services/dashboard_builder.py:160
 msgid ""
 "Évolution mensuelle du chiffre d'affaires. Chaque point représente le total "
 "des transactions du mois correspondant."
@@ -317,54 +93,306 @@ msgstr ""
 "Monthly revenue trend. Each point represents the total transactions for the "
 "corresponding month."
 
-#: InsightApp/views.py:195
+#: InsightApp/templates/pdf/report.html:2
+msgid "InsightBoard · Analyse — Page"
+msgstr "InsightBoard · Analysis — Page"
+
+#: InsightApp/templates/pdf/report.html:182
+msgid "InsightBoard · Business Analytics"
+msgstr "InsightBoard · Business Analytics"
+
+#: InsightApp/templates/pdf/report.html:183
+msgid "Rapport d'analyse"
+msgstr "Analysis Report"
+
+#: InsightApp/templates/pdf/report.html:185
+msgid "Fichier source :"
+msgstr "Source file:"
+
+#: InsightApp/templates/pdf/report.html:186
+msgid "Généré le :"
+msgstr "Generated on:"
+
+#: InsightApp/templates/pdf/report.html:187
+#: ProjectInsight/templates/dashboard/dashboard.html:31
+#, python-format
+msgid "%(n)s ligne"
+msgid_plural "%(n)s lignes"
+msgstr[0] "%(n)s row"
+msgstr[1] "%(n)s rows"
+
+#: InsightApp/templates/pdf/report.html:188
+#: ProjectInsight/templates/dashboard/dashboard.html:32
+#, python-format
+msgid "%(n)s indicateur"
+msgid_plural "%(n)s indicateurs"
+msgstr[0] "%(n)s indicator"
+msgstr[1] "%(n)s indicators"
+
+#: InsightApp/templates/pdf/report.html:189
+msgid "Devise :"
+msgstr "Currency:"
+
+#: InsightApp/templates/pdf/report.html:198
+#, python-format
+msgid ""
+"Ce rapport présente l'analyse automatisée du fichier <strong>%(f)s</strong>, "
+"traitée par InsightBoard. Les données ont été lues, nettoyées et agrégées "
+"afin de produire les indicateurs clés et les visualisations ci-dessous."
+msgstr ""
+"This report presents the automated analysis of the file <strong>%(f)s</"
+"strong>, processed by InsightBoard. The data was read, cleaned, and "
+"aggregated to produce the key indicators and visualizations below."
+
+#: InsightApp/templates/pdf/report.html:202
+msgid ""
+"Aucune devise n'a été détectée dans le fichier source ; le symbole "
+"<strong>$</strong> a été utilisé par défaut. Les montants affichés doivent "
+"être interprétés dans cette devise."
+msgstr ""
+"No currency was detected in the source file; the symbol <strong>$</strong> "
+"was used by default. Displayed amounts should be interpreted in this "
+"currency."
+
+#: InsightApp/templates/pdf/report.html:204
+#, python-format
+msgid ""
+"La devise <strong>%(sym)s (%(code)s)</strong> a été détectée depuis la "
+"colonne « %(col)s » (valeur : <code>%(raw)s</code>)."
+msgstr ""
+"The currency <strong>%(sym)s (%(code)s)</strong> was detected from the "
+"column \"%(col)s\" (value: <code>%(raw)s</code>)."
+
+#: InsightApp/templates/pdf/report.html:206
+#, python-format
+msgid ""
+"La devise <strong>%(sym)s (%(code)s)</strong> a été déduite d'un symbole "
+"présent dans les en-têtes de colonnes."
+msgstr ""
+"The currency <strong>%(sym)s (%(code)s)</strong> was inferred from a symbol "
+"found in the column headers."
+
+#: InsightApp/templates/pdf/report.html:210
+#: ProjectInsight/templates/dashboard/dashboard.html:105
+msgid ""
+"Les valeurs monétaires sont affichées en clair, avec la valeur abrégée en "
+"complément (k = milliers, M = millions, G = milliards)."
+msgstr ""
+"Monetary values are shown in full, with a compact form provided alongside "
+"(k = thousand, M = million, G = billion)."
+
+#: InsightApp/templates/pdf/report.html:217
+#: ProjectInsight/templates/dashboard/dashboard.html:117
+msgid "Indicateurs clés"
+msgstr "Key indicators"
+
+#: InsightApp/templates/pdf/report.html:252
+#: ProjectInsight/templates/dashboard/dashboard.html:199
+msgid "Détails techniques"
+msgstr "Technical details"
+
+#: InsightApp/templates/pdf/report.html:255
+msgid "Résumé des données analysées"
+msgstr "Summary of analyzed data"
+
+#: InsightApp/templates/pdf/report.html:258
+msgid "Lignes traitées"
+msgstr "Rows processed"
+
+#: InsightApp/templates/pdf/report.html:263
+#: ProjectInsight/templates/dashboard/dashboard.html:220
+msgid "Période couverte"
+msgstr "Period covered"
+
+#: InsightApp/templates/pdf/report.html:264
+#, python-format
+msgid "du %(start)s au %(end)s"
+msgstr "from %(start)s to %(end)s"
+
+#: InsightApp/templates/pdf/report.html:269
+#: ProjectInsight/templates/dashboard/dashboard.html:231
+msgid "Produits distincts"
+msgstr "Distinct products"
+
+#: InsightApp/templates/pdf/report.html:275
+#: ProjectInsight/templates/dashboard/dashboard.html:242
+msgid "Villes / régions distinctes"
+msgstr "Distinct cities / regions"
+
+#: InsightApp/templates/pdf/report.html:281
+#: ProjectInsight/templates/dashboard/dashboard.html:253
+msgid "Transaction minimale"
+msgstr "Minimum transaction"
+
+#: InsightApp/templates/pdf/report.html:287
+#: ProjectInsight/templates/dashboard/dashboard.html:264
+msgid "Transaction maximale"
+msgstr "Maximum transaction"
+
+#: InsightApp/templates/pdf/report.html:292
+#: ProjectInsight/templates/dashboard/dashboard.html:274
+msgid "Devise utilisée"
+msgstr "Currency used"
+
+#: InsightApp/templates/pdf/report.html:296
+#: ProjectInsight/templates/dashboard/dashboard.html:285
+msgid "valeur par défaut"
+msgstr "default value"
+
+#: InsightApp/templates/pdf/report.html:298
+#: ProjectInsight/templates/dashboard/dashboard.html:287
+msgid "détectée :"
+msgstr "detected:"
+
+#: InsightApp/templates/pdf/report.html:309
+#: ProjectInsight/templates/dashboard/dashboard.html:305
+msgid "Visualisations"
+msgstr "Visualizations"
+
+#: InsightApp/templates/pdf/report.html:325
+#: ProjectInsight/templates/dashboard/dashboard.html:354
+msgid "Méthodologie"
+msgstr "Methodology"
+
+#: InsightApp/templates/pdf/report.html:328
+#: ProjectInsight/templates/dashboard/dashboard.html:360
+msgid "Comment ces résultats ont-ils été calculés ?"
+msgstr "How were these results calculated?"
+
+#: InsightApp/templates/pdf/report.html:331
+msgid ""
+"<strong>Chiffre d'affaires</strong> : somme de <code>quantité × prix "
+"unitaire</code> sur l'ensemble des lignes. Si la quantité est absente, le "
+"montant de chaque ligne est considéré comme un total déjà calculé."
+msgstr ""
+"<strong>Revenue</strong>: sum of <code>quantity × unit price</code> across "
+"all rows. If quantity is missing, each row's amount is treated as an "
+"already-computed total."
+
+#: InsightApp/templates/pdf/report.html:334
+msgid ""
+"<strong>Panier moyen</strong> : chiffre d'affaires total divisé par le "
+"nombre de lignes analysées."
+msgstr ""
+"<strong>Average order</strong>: total revenue divided by the number of "
+"analyzed rows."
+
+#: InsightApp/templates/pdf/report.html:337
+msgid ""
+"<strong>Quantité totale</strong> : somme de la colonne quantité sur toutes "
+"les lignes valides."
+msgstr ""
+"<strong>Total quantity</strong>: sum of the quantity column across all "
+"valid rows."
+
+#: InsightApp/templates/pdf/report.html:340
+msgid ""
+"<strong>Produit le plus vendu</strong> : produit apparaissant le plus "
+"fréquemment dans le fichier (en nombre de lignes, non pondéré)."
+msgstr ""
+"<strong>Best-selling product</strong>: product appearing most frequently in "
+"the file (count of rows, unweighted)."
+
+#: InsightApp/templates/pdf/report.html:343
+msgid ""
+"<strong>Ville principale</strong> : ville apparaissant le plus fréquemment "
+"dans le fichier."
+msgstr ""
+"<strong>Top city</strong>: city appearing most frequently in the file."
+
+#: InsightApp/templates/pdf/report.html:346
+msgid ""
+"<strong>Détection automatique</strong> : les colonnes sont identifiées par "
+"correspondance de mots-clés (FR + EN), insensible à la casse. Aucune "
+"configuration manuelle n'est requise."
+msgstr ""
+"<strong>Automatic detection</strong>: columns are identified by keyword "
+"matching (FR + EN), case-insensitive. No manual configuration required."
+
+#: InsightApp/templates/pdf/report.html:349
+msgid ""
+"<strong>Multiples</strong> : <code>k</code> = milliers, <code>M</code> = "
+"millions, <code>G</code> = milliards. Les montants exacts restent affichés "
+"en priorité."
+msgstr ""
+"<strong>Multiples</strong>: <code>k</code> = thousands, <code>M</code> = "
+"millions, <code>G</code> = billions. Exact amounts always remain the "
+"primary display."
+
+#: InsightApp/templates/pdf/report.html:358
+#: ProjectInsight/templates/dashboard/dashboard.html:436
+msgid "Colonnes du fichier source"
+msgstr "Source file columns"
+
+#: InsightApp/templates/pdf/report.html:367
+msgid ""
+"Les colonnes surlignées en rouge ont été utilisées pour les calculs : "
+"<code>date</code>, <code>amount</code>, <code>quantity</code>, "
+"<code>product</code>, <code>city</code>, <code>revenue</code>."
+msgstr ""
+"Columns highlighted in red were used for calculations: <code>date</code>, "
+"<code>amount</code>, <code>quantity</code>, <code>product</code>, "
+"<code>city</code>, <code>revenue</code>."
+
+#: InsightApp/templates/pdf/report.html:372
+msgid "Rapport généré automatiquement par InsightBoard."
+msgstr "Report automatically generated by InsightBoard."
+
+#: InsightApp/templates/pdf/report.html:373
+msgid ""
+"Ce document est confidentiel et ne doit pas être diffusé sans autorisation."
+msgstr ""
+"This document is confidential and must not be distributed without "
+"authorization."
+
+#: InsightApp/views.py:84
 msgid "Le formulaire contient des erreurs."
 msgstr "The form contains errors."
 
-#: InsightApp/views.py:205
+#: InsightApp/views.py:92
 msgid "Impossible de lire le fichier."
 msgstr "Unable to read the file."
 
-#: InsightApp/views.py:220
+#: InsightApp/views.py:105
 msgid "Impossible de lire le fichier CSV. Vérifiez son encodage et son format."
 msgstr "Unable to read the CSV file. Check its encoding and format."
 
-#: InsightApp/views.py:227
+#: InsightApp/views.py:112
 msgid "Erreur inattendue lors du traitement."
 msgstr "Unexpected error during processing."
 
-#: InsightApp/views.py:235
+#: InsightApp/views.py:119
 #, python-format
 msgid "Analyse terminée : %(count)d ligne traitée."
 msgid_plural "Analyse terminée : %(count)d lignes traitées."
 msgstr[0] "Analysis complete: %(count)d row processed."
 msgstr[1] "Analysis complete: %(count)d rows processed."
 
-#: InsightApp/views.py:243
+#: InsightApp/views.py:126
 #: ProjectInsight/templates/dashboard/analysis_waiting.html:10
 #: ProjectInsight/templates/dashboard/home.html:176
 msgid "Analyse en cours…"
 msgstr "Analysis in progress…"
 
-#: InsightApp/views.py:262
+#: InsightApp/views.py:144
 msgid "Aucune donnée disponible pour cette analyse."
 msgstr "No data available for this analysis."
 
-#: InsightApp/views.py:351
+#: InsightApp/views.py:232
 msgid "PDF indisponible (en cours ou expiré)."
 msgstr "PDF unavailable (in progress or expired)."
 
-#: InsightApp/views.py:357
+#: InsightApp/views.py:238
 msgid "Les données sources ne sont plus disponibles."
 msgstr "The source data is no longer available."
 
-#: InsightApp/views.py:363
+#: InsightApp/views.py:244
 msgid "La génération du PDF a échoué."
 msgstr "PDF generation failed."
 
 #: ProjectInsight/templates/base.html:251
 #: ProjectInsight/templates/base.html:287
-#: ProjectInsight/templates/base.html:320
+#: ProjectInsight/templates/base.html:314
 #: ProjectInsight/templates/dashboard/dashboard.html:4
 #: ProjectInsight/templates/dashboard/dashboard.html:22
 msgid "Dashboard"
@@ -378,55 +406,51 @@ msgstr "Toggle theme"
 msgid "Menu"
 msgstr "Menu"
 
-#: ProjectInsight/templates/base.html:293
-msgid "Importer un CSV"
-msgstr "Import a CSV"
-
-#: ProjectInsight/templates/base.html:318
+#: ProjectInsight/templates/base.html:312
 msgid "Produit"
 msgstr "Product"
 
-#: ProjectInsight/templates/base.html:321
+#: ProjectInsight/templates/base.html:315
 msgid "Importer"
 msgstr "Import"
 
-#: ProjectInsight/templates/base.html:325
+#: ProjectInsight/templates/base.html:319
 msgid "Support"
 msgstr "Support"
 
-#: ProjectInsight/templates/base.html:327
+#: ProjectInsight/templates/base.html:321
 msgid "Contact"
 msgstr "Contact"
 
-#: ProjectInsight/templates/base.html:328
+#: ProjectInsight/templates/base.html:322
 msgid "Aide"
 msgstr "Help"
 
-#: ProjectInsight/templates/base.html:332
+#: ProjectInsight/templates/base.html:326
 msgid "Légal"
 msgstr "Legal"
 
-#: ProjectInsight/templates/base.html:334
+#: ProjectInsight/templates/base.html:328
 msgid "Confidentialité"
 msgstr "Privacy"
 
-#: ProjectInsight/templates/base.html:335
+#: ProjectInsight/templates/base.html:329
 msgid "CGU"
 msgstr "Terms"
 
-#: ProjectInsight/templates/base.html:339
+#: ProjectInsight/templates/base.html:333
 msgid "Entreprise"
 msgstr "Company"
 
-#: ProjectInsight/templates/base.html:350
+#: ProjectInsight/templates/base.html:344
 msgid "Tous droits réservés"
 msgstr "All rights reserved"
 
-#: ProjectInsight/templates/base.html:353
+#: ProjectInsight/templates/base.html:347
 msgid "Conçu avec"
 msgstr "Designed with"
 
-#: ProjectInsight/templates/base.html:355
+#: ProjectInsight/templates/base.html:349
 msgid "et développé avec Django"
 msgstr "and built with Django"
 
@@ -443,27 +467,13 @@ msgstr ""
 "Your file <strong>%(analysis.filename)s</strong>\n"
 "      is being processed. This page refreshes automatically."
 
-#: ProjectInsight/templates/dashboard/analysis_waiting.html:42
+#: ProjectInsight/templates/dashboard/analysis_waiting.html:50
 msgid "Échec de l\\'analyse. Veuillez réessayer."
 msgstr "Analysis failed. Please try again."
 
 #: ProjectInsight/templates/dashboard/dashboard.html:16
 msgid "Résultat de l'analyse"
 msgstr "Analysis result"
-
-#: ProjectInsight/templates/dashboard/dashboard.html:31
-#, python-format
-msgid "%(n)s ligne"
-msgid_plural "%(n)s lignes"
-msgstr[0] "%(n)s row"
-msgstr[1] "%(n)s rows"
-
-#: ProjectInsight/templates/dashboard/dashboard.html:32
-#, python-format
-msgid "%(n)s indicateur"
-msgid_plural "%(n)s indicateurs"
-msgstr[0] "%(n)s indicator"
-msgstr[1] "%(n)s indicators"
 
 #: ProjectInsight/templates/dashboard/dashboard.html:33
 msgid "Devise"
@@ -526,77 +536,17 @@ msgstr ""
 "Currency inferred from a symbol found in the column headers:\n"
 "            <strong>%(currency.symbol)s (%(currency.code)s)</strong>."
 
-#: ProjectInsight/templates/dashboard/dashboard.html:105
-msgid ""
-"Les valeurs monétaires sont affichées en clair, avec la valeur abrégée en "
-"complément (k = milliers, M = millions, G = milliards)."
-msgstr ""
-"Monetary values are shown in full, with a compact form provided alongside (k "
-"= thousand, M = million, G = billion)."
-
-#: ProjectInsight/templates/dashboard/dashboard.html:117
-msgid "Indicateurs clés"
-msgstr "Key indicators"
-
 #: ProjectInsight/templates/dashboard/dashboard.html:186
 msgid "Aucun KPI n'a pu être calculé."
 msgstr "No KPI could be calculated."
-
-#: ProjectInsight/templates/dashboard/dashboard.html:199
-msgid "Détails techniques"
-msgstr "Technical details"
 
 #: ProjectInsight/templates/dashboard/dashboard.html:210
 msgid "Nombre de lignes traitées"
 msgstr "Rows processed"
 
-#: ProjectInsight/templates/dashboard/dashboard.html:220
-msgid "Période couverte"
-msgstr "Period covered"
-
-#: ProjectInsight/templates/dashboard/dashboard.html:231
-msgid "Produits distincts"
-msgstr "Distinct products"
-
-#: ProjectInsight/templates/dashboard/dashboard.html:242
-msgid "Villes / régions distinctes"
-msgstr "Distinct cities / regions"
-
-#: ProjectInsight/templates/dashboard/dashboard.html:253
-msgid "Transaction minimale"
-msgstr "Minimum transaction"
-
-#: ProjectInsight/templates/dashboard/dashboard.html:264
-msgid "Transaction maximale"
-msgstr "Maximum transaction"
-
-#: ProjectInsight/templates/dashboard/dashboard.html:274
-msgid "Devise utilisée"
-msgstr "Currency used"
-
-#: ProjectInsight/templates/dashboard/dashboard.html:285
-msgid "valeur par défaut"
-msgstr "default value"
-
-#: ProjectInsight/templates/dashboard/dashboard.html:287
-msgid "détectée :"
-msgstr "detected:"
-
-#: ProjectInsight/templates/dashboard/dashboard.html:305
-msgid "Visualisations"
-msgstr "Visualizations"
-
 #: ProjectInsight/templates/dashboard/dashboard.html:344
 msgid "Aucune colonne reconnue (date / montant / produit / ville)."
 msgstr "No recognized column (date / amount / product / city)."
-
-#: ProjectInsight/templates/dashboard/dashboard.html:354
-msgid "Méthodologie"
-msgstr "Methodology"
-
-#: ProjectInsight/templates/dashboard/dashboard.html:360
-msgid "Comment ces résultats ont-ils été calculés ?"
-msgstr "How were these results calculated?"
 
 #: ProjectInsight/templates/dashboard/dashboard.html:368
 msgid ""
@@ -656,10 +606,6 @@ msgstr "= millions,"
 #: ProjectInsight/templates/dashboard/dashboard.html:423
 msgid "= milliards. Les montants exacts restent affichés en priorité."
 msgstr "= billions. Exact amounts always remain the primary display."
-
-#: ProjectInsight/templates/dashboard/dashboard.html:436
-msgid "Colonnes du fichier source"
-msgstr "Source file columns"
 
 #: ProjectInsight/templates/dashboard/dashboard.html:462
 msgid ""
@@ -1424,7 +1370,8 @@ msgstr "The inline value did not match the parent instance."
 
 #: env/lib/python3.14/site-packages/django/forms/models.py:1476
 msgid "Select a valid choice. That choice is not one of the available choices."
-msgstr "Select a valid choice. That choice is not one of the available choices."
+msgstr ""
+"Select a valid choice. That choice is not one of the available choices."
 
 #: env/lib/python3.14/site-packages/django/forms/models.py:1627
 #, python-format
@@ -2084,8 +2031,151 @@ msgstr "Django Community"
 msgid "Connect, get help, or contribute"
 msgstr "Connect, get help, or contribute"
 
+#~ msgid "Analyse Report"
+#~ msgstr "Analysis Report"
+
+#~ msgid "Source file:"
+#~ msgstr "Source file:"
+
+#~ msgid "Generated on:"
+#~ msgstr "Generated on:"
+
+#, python-format
+#~ msgid "%(n)s row"
+#~ msgid_plural "%(n)s rows"
+#~ msgstr[0] "%(n)s row"
+#~ msgstr[1] "%(n)s rows"
+
+#, python-format
+#~ msgid "%(n)s indicator"
+#~ msgid_plural "%(n)s indicators"
+#~ msgstr[0] "%(n)s indicator"
+#~ msgstr[1] "%(n)s indicators"
+
+#~ msgid "Currency:"
+#~ msgstr "Currency:"
+
+#, python-format
+#~ msgid ""
+#~ "This report presents the automated analysis of the file <strong>%(f)s</"
+#~ "strong>, processed by InsightBoard. The data was read, cleaned, and "
+#~ "aggregated to produce the key indicators and visualizations below."
+#~ msgstr ""
+#~ "This report presents the automated analysis of the file <strong>%(f)s</"
+#~ "strong>, processed by InsightBoard. The data was read, cleaned, and "
+#~ "aggregated to produce the key indicators and visualizations below."
+
+#~ msgid ""
+#~ "No currency was detected in the source file, so the symbol <strong>$</"
+#~ "strong> was used by default. Displayed amounts should be interpreted in "
+#~ "this currency."
+#~ msgstr ""
+#~ "No currency was detected in the source file, so the symbol <strong>$</"
+#~ "strong> was used by default. Displayed amounts should be interpreted in "
+#~ "this currency."
+
+#~ msgid ""
+#~ "Monetary values are shown in full, with a compact form (k = thousand, M = "
+#~ "million, G = billion) provided alongside for quick reading."
+#~ msgstr ""
+#~ "Monetary values are shown in full, with a compact form (k = thousand, M = "
+#~ "million, G = billion) provided alongside for quick reading."
+
+#~ msgid "Key indicators"
+#~ msgstr "Key indicators"
+
+#~ msgid "Technical details"
+#~ msgstr "Technical details"
+
+#~ msgid "Summary of analyzed data"
+#~ msgstr "Summary of analyzed data"
+
+#~ msgid "Rows processed"
+#~ msgstr "Rows processed"
+
+#~ msgid "Period covered"
+#~ msgstr "Period covered"
+
+#~ msgid "Distinct products"
+#~ msgstr "Distinct products"
+
+#~ msgid "Distinct cities / regions"
+#~ msgstr "Distinct cities / regions"
+
+#~ msgid "Minimum transaction"
+#~ msgstr "Minimum transaction"
+
+#~ msgid "Maximum transaction"
+#~ msgstr "Maximum transaction"
+
+#~ msgid "Currency used"
+#~ msgstr "Currency used"
+
+#~ msgid "default value"
+#~ msgstr "default value"
+
+#~ msgid "detected:"
+#~ msgstr "detected:"
+
+#~ msgid "Visualizations"
+#~ msgstr "Visualizations"
+
+#~ msgid "Methodology"
+#~ msgstr "Methodology"
+
+#~ msgid "How were these results calculated?"
+#~ msgstr "How were these results calculated?"
+
+#~ msgid ""
+#~ "<strong>Revenue</strong>: sum of <code>quantity × unit price</code> "
+#~ "across all rows. If quantity is missing, each row's amount is treated as "
+#~ "an already-computed total."
+#~ msgstr ""
+#~ "<strong>Revenue</strong>: sum of <code>quantity × unit price</code> "
+#~ "across all rows. If quantity is missing, each row's amount is treated as "
+#~ "an already-computed total."
+
+#~ msgid ""
+#~ "<strong>Average order</strong>: total revenue divided by the number of "
+#~ "analyzed rows."
+#~ msgstr ""
+#~ "<strong>Average order</strong>: total revenue divided by the number of "
+#~ "analyzed rows."
+
+#~ msgid ""
+#~ "<strong>Total quantity</strong>: sum of the quantity column across all "
+#~ "valid rows."
+#~ msgstr ""
+#~ "<strong>Total quantity</strong>: sum of the quantity column across all "
+#~ "valid rows."
+
+#~ msgid ""
+#~ "<strong>Best-selling product</strong>: product appearing most frequently "
+#~ "in the file (count of rows, unweighted)."
+#~ msgstr ""
+#~ "<strong>Best-selling product</strong>: product appearing most frequently "
+#~ "in the file (count of rows, unweighted)."
+
+#~ msgid ""
+#~ "<strong>Top city</strong>: city appearing most frequently in the file."
+#~ msgstr ""
+#~ "<strong>Top city</strong>: city appearing most frequently in the file."
+
+#~ msgid ""
+#~ "<strong>Automatic detection</strong>: columns are identified by keyword "
+#~ "matching (FR + EN), case-insensitive. No manual configuration required."
+#~ msgstr ""
+#~ "<strong>Automatic detection</strong>: columns are identified by keyword "
+#~ "matching (FR + EN), case-insensitive. No manual configuration required."
+
+#~ msgid "Source file columns"
+#~ msgstr "Source file columns"
+
+#~ msgid "Report automatically generated by InsightBoard."
+#~ msgstr "Report automatically generated by InsightBoard."
+
+#~ msgid "Importer un CSV"
+#~ msgstr "Import a CSV"
+
 #~ msgid "Le fichier CSV est vide."
 #~ msgstr "The CSV file is empty."
-
-#~ msgid "Le fichier source est vide."
-#~ msgstr "The source file is empty."

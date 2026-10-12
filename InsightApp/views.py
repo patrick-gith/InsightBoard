@@ -3,15 +3,16 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import datetime
-from django.db import connection
-from django.db.utils import OperationalError
 import time
+from datetime import datetime
 
 from django.conf import settings
 from django.contrib import messages
+from django.core.cache import cache
+from django.db import connection
+from django.db.utils import OperationalError
 from django.http import (
-    HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse,
+    HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse, Http404,
 )
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -20,161 +21,46 @@ from django.utils.translation import ngettext
 from django.views.decorators.csrf import csrf_exempt
 
 from .forms import UploadCSVForm
-from .models import Analysis
 from .services.analysis_runner import get_runner
-from .services.analyzer import compute_kpis, revenue_by, revenue_over_time
-from .services.charts import (
-    build_bar, build_line, build_donut, fig_to_data_uri, fig_to_html,
-)
-from .services.csv_loader import (
-    detect_currency, detect_schema, enrich_revenue, load_csv,
-)
-from .services.formatting import format_amount, format_int
+from .services.analyzer import compute_kpis
+from .services.csv_loader import detect_currency
 from .services.pdf_generator import render_pdf
+from .services.dashboard_builder import (
+    KPI_LABELS, KPI_META, DEFAULT_META,
+    revenue_col as _revenue_col,
+    prepare_dataframe as _prepare_dataframe,
+    build_kpi_entry as _build_kpi_entry,
+    build_chart_specs as _build_chart_specs,
+    build_stats as _build_stats,
+)
+
+# ---- Façade unique DB (local) / cache (prod) --------------------------------
+if settings.USE_LOCAL_DB:
+    from .models import Analysis
+
+    def _create_analysis(filename):
+        return Analysis.objects.create(filename=filename)
+
+    def _get_analysis_or_404(uuid):
+        return get_object_or_404(Analysis, uuid=uuid)
+else:
+    from .store import AnalysisStore
+
+    def _create_analysis(filename):
+        return AnalysisStore.create(filename)
+
+    def _get_analysis_or_404(uuid):
+        a = AnalysisStore.get(uuid)
+        if a is None:
+            raise Http404("Analysis introuvable")
+        return a
+# -----------------------------------------------------------------------------
 
 logger = logging.getLogger(__name__)
 
 
 # ==========================================================
-# LIBELLÉS + META (inchangés)
-# ==========================================================
-KPI_LABELS = {
-    "Rows":           _("Lignes"),
-    "Total revenue":  _("Chiffre d'affaires"),
-    "Average order":  _("Panier moyen"),
-    "Total quantity": _("Quantité totale"),
-    "Top product":    _("Produit le plus vendu"),
-    "Top city":       _("Ville principale"),
-}
-
-KPI_META = {
-    "Rows":           ("fa-list",          "lignes", "int"),
-    "Total revenue":  ("fa-coins",         "",       "amount"),
-    "Average order":  ("fa-cart-shopping", "",       "amount"),
-    "Total quantity": ("fa-boxes-stacked", "unités", "int"),
-    "Top product":    ("fa-crown",         "",       "raw"),
-    "Top city":       ("fa-location-dot",  "",       "raw"),
-}
-
-DEFAULT_META = ("fa-chart-simple", "", "raw")
-
-
-def _revenue_col(schema):
-    return schema.get("revenue") or schema.get("amount")
-
-
-def _prepare_dataframe(content: bytes):
-    df = load_csv(content)
-    if df.empty:
-        return df, {}, {}
-    schema = detect_schema(df)
-    df = enrich_revenue(df, schema)
-    schema = detect_schema(df)
-    return df, schema, {}
-
-
-# ==========================================================
-# FICHE KPI (inchangée)
-# ==========================================================
-def _build_kpi_entry(en_key: str, value, currency: dict) -> dict:
-    label = str(KPI_LABELS.get(en_key, en_key))
-    icon, unit_hint, kind = KPI_META.get(en_key, DEFAULT_META)
-
-    if kind == "amount":
-        value_display = format_amount(value, currency["symbol"], mode="full")
-        compact = format_amount(value, currency["symbol"], mode="short")
-        value_multiple = "" if compact == value_display else compact
-        unit = ""
-    elif kind == "int":
-        value_display = format_int(value)
-        value_multiple = ""
-        unit = unit_hint
-    else:
-        value_display = str(value)
-        value_multiple = ""
-        unit = ""
-
-    return {
-        "key":            en_key,
-        "label":          label,
-        "raw":            value,
-        "value":          value_display,
-        "value_display":  value_display,
-        "value_multiple": value_multiple,
-        "unit":           unit,
-        "icon":           icon,
-        "kind":           kind,
-    }
-
-
-# ==========================================================
-# GRAPHIQUES (inchangée)
-# ==========================================================
-def _build_chart_specs(df, schema, currency_symbol: str, *, for_pdf=False):
-    rev_col = _revenue_col(schema)
-    charts: list[dict] = []
-
-    def add(title, description, builder, data, *args, **kwargs):
-        if data.empty:
-            return
-        fig = builder(data, *args, **kwargs)
-        if for_pdf:
-            try:
-                charts.append({
-                    "title": title,
-                    "description": description,
-                    "image": fig_to_data_uri(fig, width=900, scale=1.8),
-                })
-            except Exception as exc:
-                logger.warning("Kaleido échec : %s", exc)
-        else:
-            charts.append({
-                "title": title,
-                "description": description,
-                "html": fig_to_html(fig),
-            })
-
-    if schema.get("city") and rev_col:
-        d = revenue_by(df, schema, schema["city"]).head(15)
-        add(str(_("Chiffre d'affaires par ville")),
-            str(_("Répartition du chiffre d'affaires par ville. "
-                  "Les 15 villes les plus contributrices sont affichées, "
-                  "triées par ordre décroissant.")),
-            build_bar, d, schema["city"], rev_col,
-            str(_("Chiffre d'affaires par ville")),
-            currency_symbol=currency_symbol)
-
-    if schema.get("product") and rev_col:
-        d = revenue_by(df, schema, schema["product"]).head(10)
-        add(str(_("Top 10 produits")),
-            str(_("Classement des 10 produits générant le chiffre d'affaires le plus élevé.")),
-            build_bar, d, schema["product"], rev_col,
-            str(_("Top 10 produits")),
-            currency_symbol=currency_symbol)
-
-    if schema.get("product") and rev_col:
-        d = revenue_by(df, schema, schema["product"])
-        add(str(_("Répartition du CA par produit")),
-            str(_("Poids de chaque produit dans le chiffre d'affaires total. "
-                  "Les produits les moins significatifs sont regroupés sous « Autres ».")),
-            build_donut, d, schema["product"], rev_col,
-            str(_("Répartition du CA par produit")),
-            currency_symbol=currency_symbol, top_n=6)
-
-    if schema.get("date") and rev_col:
-        d = revenue_over_time(df, schema)
-        add(str(_("Évolution du chiffre d'affaires")),
-            str(_("Évolution mensuelle du chiffre d'affaires. Chaque point "
-                  "représente le total des transactions du mois correspondant.")),
-            build_line, d, "period", rev_col,
-            str(_("Évolution du chiffre d'affaires")),
-            currency_symbol=currency_symbol)
-
-    return charts
-
-
-# ==========================================================
-# VUES
+# VUES DE BASE
 # ==========================================================
 def home(request: HttpRequest) -> HttpResponse:
     return render(request, "dashboard/home.html", {"form": UploadCSVForm()})
@@ -186,7 +72,7 @@ def _render_home_with_error(request, form, msg, status=400):
 
 
 # ----------------------------------------------------------
-# ANALYZE — délègue au runner (local OU github)
+# ANALYZE
 # ----------------------------------------------------------
 def analyze(request: HttpRequest) -> HttpResponse:
     if request.method != "POST":
@@ -199,17 +85,13 @@ def analyze(request: HttpRequest) -> HttpResponse:
         )
 
     uploaded = form.cleaned_data["file"]
-
     try:
         content = uploaded.read()
     except Exception as exc:
         logger.exception("Lecture upload : %s", exc)
-        return _render_home_with_error(
-            request, form, _("Impossible de lire le fichier.")
-        )
+        return _render_home_with_error(request, form, _("Impossible de lire le fichier."))
 
-    # Création AVANT soumission (le runner met à jour le reste)
-    analysis = Analysis.objects.create(filename=uploaded.name)
+    analysis = _create_analysis(uploaded.name)
 
     runner = get_runner()
     try:
@@ -231,7 +113,6 @@ def analyze(request: HttpRequest) -> HttpResponse:
         )
 
     if state == "completed":
-        # Mode local → dashboard direct
         messages.success(
             request,
             ngettext(
@@ -242,23 +123,21 @@ def analyze(request: HttpRequest) -> HttpResponse:
         )
         return redirect("insight:dashboard", uuid=analysis.uuid)
 
-    # Mode github → page d'attente
     messages.info(request, _("Analyse en cours…"))
     return redirect("insight:analysis_waiting", uuid=analysis.uuid)
 
 
 # ----------------------------------------------------------
-# DASHBOARD — unifié local / github
+# DASHBOARD
 # ----------------------------------------------------------
 def dashboard(request: HttpRequest, uuid) -> HttpResponse:
-    analysis = get_object_or_404(Analysis, uuid=uuid)
+    analysis = _get_analysis_or_404(uuid)
 
     if settings.ANALYSIS_MODE == "github":
         if analysis.status != "completed":
             return redirect("insight:analysis_waiting", uuid=analysis.uuid)
         data = dict(analysis.dashboard_data or {})
     else:
-        # Mode local → régénère (comportement historique)
         data = _compute_dashboard_context(analysis)
 
     if not data:
@@ -274,7 +153,7 @@ def _compute_dashboard_context(analysis) -> dict:
     if not analysis.csv_data:
         return {}
     content = bytes(analysis.csv_data)
-    df, schema, _ = _prepare_dataframe(content)
+    df, schema = _prepare_dataframe(content)
     if df.empty:
         return {}
     currency = detect_currency(df, schema)
@@ -283,59 +162,58 @@ def _compute_dashboard_context(analysis) -> dict:
     charts = _build_chart_specs(df, schema, currency["symbol"], for_pdf=False)
     stats = _build_stats(df, schema, kpis_raw, currency)
     return {
-        "filename":    analysis.filename,
-        "kpis":        kpis,
-        "kpis_count":  len(kpis),
-        "charts":      charts,
-        "columns":     schema["all"],
-        "schema":      schema,
-        "currency":    currency,
-        "rows":        len(df),
-        "stats":       stats,
+        "filename":   analysis.filename,
+        "kpis":       kpis,
+        "kpis_count": len(kpis),
+        "charts":     charts,
+        "columns":    schema["all"],
+        "schema":     schema,
+        "currency":   currency,
+        "rows":       len(df),
+        "stats":      stats,
     }
 
 
 # ----------------------------------------------------------
-# PAGE D'ATTENTE + STATUS (mode github)
+# WAITING + STATUS
 # ----------------------------------------------------------
 def analysis_waiting(request: HttpRequest, uuid) -> HttpResponse:
-    analysis = get_object_or_404(Analysis, uuid=uuid)
+    analysis = _get_analysis_or_404(uuid)
     if analysis.status == "completed":
         return redirect("insight:dashboard", uuid=analysis.uuid)
-    return render(
-        request,
-        "dashboard/analysis_waiting.html",
-        {"analysis": analysis},
-    )
+    return render(request, "dashboard/analysis_waiting.html", {"analysis": analysis})
 
 
 def analysis_status(request: HttpRequest, uuid) -> JsonResponse:
-    a = get_object_or_404(Analysis, uuid=uuid)
+    a = _get_analysis_or_404(uuid)
     return JsonResponse({"status": a.status})
 
 
 # ----------------------------------------------------------
-# WEBHOOK appelé par GitHub Actions
+# WEBHOOK (reçoit aussi dashboard_data)
 # ----------------------------------------------------------
 @csrf_exempt
 def analysis_webhook(request: HttpRequest) -> JsonResponse:
     if request.method != "POST":
         return JsonResponse({"error": "method"}, status=405)
 
-    # Vérification d'un token partagé (header X-Webhook-Token)
     token = request.headers.get("X-Webhook-Token", "")
     if token != settings.WEBHOOK_TOKEN:
         return JsonResponse({"error": "forbidden"}, status=403)
 
     try:
         payload = json.loads(request.body)
-        a = Analysis.objects.get(uuid=payload["analysis_uuid"])
+        a = _get_analysis_or_404(payload["analysis_uuid"])
+
         a.status = payload.get("status", "completed")
         if payload.get("pdf_artifact"):
             a.pdf_artifact = str(payload["pdf_artifact"])
-        a.save(update_fields=["status", "pdf_artifact"])
+        if payload.get("dashboard_data"):
+            a.dashboard_data = payload["dashboard_data"]
+
+        a.save()
         return JsonResponse({"ok": True})
-    except Analysis.DoesNotExist:
+    except Http404:
         return JsonResponse({"error": "not found"}, status=404)
     except Exception as exc:
         logger.exception("webhook : %s", exc)
@@ -343,10 +221,10 @@ def analysis_webhook(request: HttpRequest) -> JsonResponse:
 
 
 # ----------------------------------------------------------
-# EXPORT PDF — branche local / github
+# EXPORT PDF
 # ----------------------------------------------------------
 def export_pdf(request: HttpRequest, uuid) -> HttpResponse:
-    analysis = get_object_or_404(Analysis, uuid=uuid)
+    analysis = _get_analysis_or_404(uuid)
 
     if settings.ANALYSIS_MODE == "github":
         pdf_bytes = get_runner().get_pdf_bytes(analysis)
@@ -373,8 +251,7 @@ def export_pdf(request: HttpRequest, uuid) -> HttpResponse:
 
 
 def _regenerate_pdf_local(analysis) -> bytes:
-    """Reprend exactement l'ancienne logique d'export_pdf (mode local)."""
-    df, schema, _ = _prepare_dataframe(bytes(analysis.csv_data))
+    df, schema = _prepare_dataframe(bytes(analysis.csv_data))
     if df.empty:
         raise ValueError("Fichier vide")
 
@@ -398,64 +275,34 @@ def _regenerate_pdf_local(analysis) -> bytes:
     return render_pdf("pdf/report.html", ctx, base_url=str(settings.BASE_DIR))
 
 
-# ==========================================================
-# STATS (inchangée)
-# ==========================================================
-def _build_stats(df, schema, kpis, currency) -> dict:
-    import pandas as pd
-
-    stats: dict = {
-        "period_start": None,
-        "period_end": None,
-        "nb_products": None,
-        "nb_cities": None,
-        "min_transaction": None,
-        "max_transaction": None,
-        "currency_symbol": currency["symbol"],
-        "currency_source": currency["source"],
-        "currency_raw": currency.get("raw"),
-    }
-
-    date_col = schema.get("date")
-    if date_col and date_col in df.columns:
-        try:
-            dates = pd.to_datetime(df[date_col], errors="coerce").dropna()
-            if not dates.empty:
-                stats["period_start"] = dates.min().strftime("%d/%m/%Y")
-                stats["period_end"] = dates.max().strftime("%d/%m/%Y")
-        except Exception:
-            pass
-
-    prod = schema.get("product")
-    if prod and prod in df.columns:
-        stats["nb_products"] = int(df[prod].nunique())
-
-    city = schema.get("city")
-    if city and city in df.columns:
-        stats["nb_cities"] = int(df[city].nunique())
-
-    rev = schema.get("revenue") or schema.get("amount")
-    if rev and rev in df.columns:
-        series = pd.to_numeric(df[rev], errors="coerce").dropna()
-        if not series.empty:
-            stats["min_transaction"] = format_amount(
-                series.min(), currency["symbol"], mode="full"
-            )
-            stats["max_transaction"] = format_amount(
-                series.max(), currency["symbol"], mode="full"
-            )
-
-    return stats
-
-
-
-
+# ----------------------------------------------------------
+# HEALTH (adapté DB / cache)
+# ----------------------------------------------------------
 def health(request: HttpRequest) -> JsonResponse:
     """
     Endpoint de santé utilisé par keep-alive.yml.
-    Force une requête SQL pour réveiller Neon s'il est endormi.
+    - Mode DB    : SELECT 1
+    - Mode cache : set/get d'une clé
     """
     start = time.monotonic()
+
+    if not settings.USE_LOCAL_DB:
+        try:
+            cache.set("insight:health", "1", timeout=5)
+            ok = cache.get("insight:health") == "1"
+        except Exception as exc:
+            logger.error("Health: cache inaccessible — %s", exc)
+            return JsonResponse(
+                {"status": "degraded", "cache": "down", "error": str(exc)},
+                status=503,
+            )
+        latency_ms = int((time.monotonic() - start) * 1000)
+        return JsonResponse({
+            "status": "ok",
+            "cache": "up" if ok else "degraded",
+            "latency_ms": latency_ms,
+        })
+
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT 1")
@@ -468,8 +315,4 @@ def health(request: HttpRequest) -> JsonResponse:
         )
 
     latency_ms = int((time.monotonic() - start) * 1000)
-    return JsonResponse({
-        "status": "ok",
-        "db": "up",
-        "latency_ms": latency_ms,
-    })
+    return JsonResponse({"status": "ok", "db": "up", "latency_ms": latency_ms})

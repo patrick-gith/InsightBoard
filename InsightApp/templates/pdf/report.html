@@ -74,7 +74,6 @@
     color: #6b7280; font-weight: 700; line-height: 1.2; margin-bottom: 4px;
     word-wrap: break-word;
   }
-  /* Valeur principale — police de base réduite + paliers */
   .kpi-value {
     font-weight: 800; color: #111827; line-height: 1.15;
     font-size: 13pt;
@@ -181,13 +180,13 @@
 <!-- ============================================ -->
 <div class="cover">
   <div class="brand">{% trans "InsightBoard · Business Analytics" %}</div>
-  <h1>{% trans "Analyse Report" %}</h1>
+  <h1>{% trans "Rapport d'analyse" %}</h1>
   <div class="meta">
-    {% trans "Source file:" %} <strong>{{ filename }}</strong><br>
-    {% trans "Generated on:" %} <strong>{{ generated_at|date:"SHORT_DATETIME_FORMAT" }}</strong>
-    · {% blocktrans count n=rows %}{{ n }} row{% plural %}{{ n }} rows{% endblocktrans %}
-    · {% blocktrans count n=kpis_list|length %}{{ n }} indicator{% plural %}{{ n }} indicators{% endblocktrans %}
-    · {% trans "Currency:" %} <strong>{{ currency.symbol }} ({{ currency.code }})</strong>
+    {% trans "Fichier source :" %} <strong>{{ filename }}</strong><br>
+    {% trans "Généré le :" %} <strong>{{ generated_at|date:"SHORT_DATETIME_FORMAT" }}</strong>
+    · {% blocktrans count n=rows %}{{ n }} ligne{% plural %}{{ n }} lignes{% endblocktrans %}
+    · {% blocktrans count n=kpis_list|length %}{{ n }} indicateur{% plural %}{{ n }} indicateurs{% endblocktrans %}
+    · {% trans "Devise :" %} <strong>{{ currency.symbol }} ({{ currency.code }})</strong>
   </div>
 </div>
 
@@ -196,28 +195,26 @@
 <!-- ============================================ -->
 <div class="intro">
   <p>
-    {% blocktrans with f=filename %}This report presents the automated analysis of the file <strong>{{ f }}</strong>, processed by InsightBoard. The data was read, cleaned, and aggregated to produce the key indicators and visualizations below.{% endblocktrans %}
+    {% blocktrans with f=filename %}Ce rapport présente l'analyse automatisée du fichier <strong>{{ f }}</strong>, traitée par InsightBoard. Les données ont été lues, nettoyées et agrégées afin de produire les indicateurs clés et les visualisations ci-dessous.{% endblocktrans %}
   </p>
   <p>
     {% if currency.source == "default" %}
-      {% blocktrans %}No currency was detected in the source file, so the symbol <strong>$</strong> was used by default. Displayed amounts should be interpreted in this currency.{% endblocktrans %}
+      {% blocktrans %}Aucune devise n'a été détectée dans le fichier source ; le symbole <strong>$</strong> a été utilisé par défaut. Les montants affichés doivent être interprétés dans cette devise.{% endblocktrans %}
     {% elif currency.source == "column" %}
-      {% blocktrans with sym=currency.symbol code=currency.code col=schema.currency_col raw=currency.raw %}The currency <strong>{{ sym }} ({{ code }})</strong> was detected from the column "{{ col }}" (value: <code>{{ raw }}</code>).{% endblocktrans %}
+      {% blocktrans with sym=currency.symbol code=currency.code col=schema.currency_col raw=currency.raw %}La devise <strong>{{ sym }} ({{ code }})</strong> a été détectée depuis la colonne « {{ col }} » (valeur : <code>{{ raw }}</code>).{% endblocktrans %}
     {% elif currency.source == "header" %}
-      {% blocktrans with sym=currency.symbol code=currency.code %}The currency <strong>{{ sym }} ({{ code }})</strong> was inferred from a symbol found in the column headers.{% endblocktrans %}
+      {% blocktrans with sym=currency.symbol code=currency.code %}La devise <strong>{{ sym }} ({{ code }})</strong> a été déduite d'un symbole présent dans les en-têtes de colonnes.{% endblocktrans %}
     {% endif %}
   </p>
   <p>
-    {% trans "Monetary values are shown in full, with a compact form (k = thousand, M = million, G = billion) provided alongside for quick reading." %}
+    {% trans "Les valeurs monétaires sont affichées en clair, avec la valeur abrégée en complément (k = milliers, M = millions, G = milliards)." %}
   </p>
 </div>
 
 <!-- ============================================ -->
-<!-- KPI — mêmes clés que le dashboard            -->
+<!-- KPI — mêmes clés que le dashboard             -->
 <!-- ============================================ -->
-<div class="section-title">{% trans "Key indicators" %}</div>
-
-<div class="section-title">{% trans "Key indicators" %}</div>
+<div class="section-title">{% trans "Indicateurs clés" %}</div>
 
 <div class="kpi-grid">
   <div class="kpi-row">
@@ -252,53 +249,53 @@
 <!-- ============================================ -->
 <!-- DÉTAILS TECHNIQUES                            -->
 <!-- ============================================ -->
-<div class="section-title">{% trans "Technical details" %}</div>
+<div class="section-title">{% trans "Détails techniques" %}</div>
 
 <div class="methodology">
-  <h4>{% trans "Summary of analyzed data" %}</h4>
+  <h4>{% trans "Résumé des données analysées" %}</h4>
   <table class="details-table">
     <tr>
-      <td>{% trans "Rows processed" %}</td>
+      <td>{% trans "Lignes traitées" %}</td>
       <td>{{ rows }}</td>
     </tr>
     {% if stats.period_start and stats.period_end %}
       <tr>
-        <td>{% trans "Period covered" %}</td>
-        <td>{% blocktrans with start=stats.period_start end=stats.period_end %}from {{ start }} to {{ end }}{% endblocktrans %}</td>
+        <td>{% trans "Période couverte" %}</td>
+        <td>{% blocktrans with start=stats.period_start end=stats.period_end %}du {{ start }} au {{ end }}{% endblocktrans %}</td>
       </tr>
     {% endif %}
     {% if stats.nb_products is not None %}
       <tr>
-        <td>{% trans "Distinct products" %}</td>
+        <td>{% trans "Produits distincts" %}</td>
         <td>{{ stats.nb_products }}</td>
       </tr>
     {% endif %}
     {% if stats.nb_cities is not None %}
       <tr>
-        <td>{% trans "Distinct cities / regions" %}</td>
+        <td>{% trans "Villes / régions distinctes" %}</td>
         <td>{{ stats.nb_cities }}</td>
       </tr>
     {% endif %}
     {% if stats.min_transaction %}
       <tr>
-        <td>{% trans "Minimum transaction" %}</td>
+        <td>{% trans "Transaction minimale" %}</td>
         <td>{{ stats.min_transaction }}</td>
       </tr>
     {% endif %}
     {% if stats.max_transaction %}
       <tr>
-        <td>{% trans "Maximum transaction" %}</td>
+        <td>{% trans "Transaction maximale" %}</td>
         <td>{{ stats.max_transaction }}</td>
       </tr>
     {% endif %}
     <tr>
-      <td>{% trans "Currency used" %}</td>
+      <td>{% trans "Devise utilisée" %}</td>
       <td>
         {{ currency.symbol }} ({{ currency.code }})
         {% if currency.source == "default" %}
-          <span style="color:#9ca3af"> — {% trans "default value" %}</span>
+          <span style="color:#9ca3af"> — {% trans "valeur par défaut" %}</span>
         {% elif currency.raw %}
-          <span style="color:#9ca3af"> — {% trans "detected:" %} <code>{{ currency.raw }}</code></span>
+          <span style="color:#9ca3af"> — {% trans "détectée :" %} <code>{{ currency.raw }}</code></span>
         {% endif %}
       </td>
     </tr>
@@ -309,7 +306,7 @@
 <!-- GRAPHIQUES                                    -->
 <!-- ============================================ -->
 {% if charts %}
-  <div class="section-title">{% trans "Visualizations" %}</div>
+  <div class="section-title">{% trans "Visualisations" %}</div>
 
   {% for chart in charts %}
     <div class="chart-block">
@@ -325,31 +322,31 @@
 <!-- ============================================ -->
 <!-- MÉTHODOLOGIE                                  -->
 <!-- ============================================ -->
-<div class="section-title">{% trans "Methodology" %}</div>
+<div class="section-title">{% trans "Méthodologie" %}</div>
 
 <div class="methodology">
-  <h4>{% trans "How were these results calculated?" %}</h4>
+  <h4>{% trans "Comment ces résultats ont-ils été calculés ?" %}</h4>
   <ul>
     <li>
-      {% blocktrans %}<strong>Revenue</strong>: sum of <code>quantity × unit price</code> across all rows. If quantity is missing, each row's amount is treated as an already-computed total.{% endblocktrans %}
+      {% blocktrans %}<strong>Chiffre d'affaires</strong> : somme de <code>quantité × prix unitaire</code> sur l'ensemble des lignes. Si la quantité est absente, le montant de chaque ligne est considéré comme un total déjà calculé.{% endblocktrans %}
     </li>
     <li>
-      {% blocktrans %}<strong>Average order</strong>: total revenue divided by the number of analyzed rows.{% endblocktrans %}
+      {% blocktrans %}<strong>Panier moyen</strong> : chiffre d'affaires total divisé par le nombre de lignes analysées.{% endblocktrans %}
     </li>
     <li>
-      {% blocktrans %}<strong>Total quantity</strong>: sum of the quantity column across all valid rows.{% endblocktrans %}
+      {% blocktrans %}<strong>Quantité totale</strong> : somme de la colonne quantité sur toutes les lignes valides.{% endblocktrans %}
     </li>
     <li>
-      {% blocktrans %}<strong>Best-selling product</strong>: product appearing most frequently in the file (count of rows, unweighted).{% endblocktrans %}
+      {% blocktrans %}<strong>Produit le plus vendu</strong> : produit apparaissant le plus fréquemment dans le fichier (en nombre de lignes, non pondéré).{% endblocktrans %}
     </li>
     <li>
-      {% blocktrans %}<strong>Top city</strong>: city appearing most frequently in the file.{% endblocktrans %}
+      {% blocktrans %}<strong>Ville principale</strong> : ville apparaissant le plus fréquemment dans le fichier.{% endblocktrans %}
     </li>
     <li>
-      {% blocktrans %}<strong>Automatic detection</strong>: columns are identified by keyword matching (FR + EN), case-insensitive. No manual configuration required.{% endblocktrans %}
+      {% blocktrans %}<strong>Détection automatique</strong> : les colonnes sont identifiées par correspondance de mots-clés (FR + EN), insensible à la casse. Aucune configuration manuelle n'est requise.{% endblocktrans %}
     </li>
     <li>
-      {% blocktrans %}<strong>Multiples</strong>: <code>k</code> = thousands, <code>M</code> = millions, <code>G</code> = billions. Exact amounts always remain the primary display.{% endblocktrans %}
+      {% blocktrans %}<strong>Multiples</strong> : <code>k</code> = milliers, <code>M</code> = millions, <code>G</code> = milliards. Les montants exacts restent affichés en priorité.{% endblocktrans %}
     </li>
   </ul>
 </div>
@@ -358,7 +355,7 @@
 <!-- COLONNES DÉTECTÉES                            -->
 <!-- ============================================ -->
 {% if columns %}
-  <div class="section-title">{% trans "Source file columns" %}</div>
+  <div class="section-title">{% trans "Colonnes du fichier source" %}</div>
   <div class="columns-list">
     {% for col in columns %}
       <code class="{% if col == schema.date or col == schema.amount or col == schema.quantity or col == schema.product or col == schema.city or col == schema.revenue %}detected{% endif %}">
@@ -367,13 +364,13 @@
     {% endfor %}
   </div>
   <p style="font-size: 9pt; color: #6b7280; margin-top: 8px;">
-    {% blocktrans %}Columns highlighted in red were used for calculations: <code>date</code>, <code>amount</code>, <code>quantity</code>, <code>product</code>, <code>city</code>, <code>revenue</code>.{% endblocktrans %}
+    {% blocktrans %}Les colonnes surlignées en rouge ont été utilisées pour les calculs : <code>date</code>, <code>amount</code>, <code>quantity</code>, <code>product</code>, <code>city</code>, <code>revenue</code>.{% endblocktrans %}
   </p>
 {% endif %}
 
 <div class="footer-note">
-  {% trans "Report automatically generated by InsightBoard." %}<br>
-  {% trans "This document is confidential and must not be distributed without authorization." %}
+  {% trans "Rapport généré automatiquement par InsightBoard." %}<br>
+  {% trans "Ce document est confidentiel et ne doit pas être diffusé sans autorisation." %}
 </div>
 
 </body>

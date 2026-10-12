@@ -17,12 +17,15 @@ Including another URLconf
 """
 URL configuration for ProjectInsight project.
 """
+from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
     path("i18n/", include("django.conf.urls.i18n")),
-    path("admin/", admin.site.urls),
     path("", include("InsightApp.urls")),
 ]
+
+if settings.USE_LOCAL_DB:
+    urlpatterns.insert(0, path("admin/", admin.site.urls))

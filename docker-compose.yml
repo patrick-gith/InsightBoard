@@ -22,9 +22,15 @@ services:
       - "8000:8000"
     environment:
       - DEBUG=True
+      - USE_LOCAL_DB=1
       - SECRET_KEY=django-insecure-local-dev-only-change-this
-      - DATABASE_URL=postgres://guizo:1234@db:5432/insightdb
+      - DB_NAME=insightdb
+      - DB_USER=guizo
+      - DB_PASSWORD=1234
+      - DB_HOST=db
+      - DB_PORT=5432
       - ALLOWED_HOSTS=localhost,127.0.0.1
+      - ANALYSIS_MODE=local
     depends_on:
       db:
         condition: service_healthy
