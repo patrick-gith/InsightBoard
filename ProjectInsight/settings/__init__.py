@@ -153,6 +153,9 @@ if DATABASE_URL:
         conn_health_checks=True,
         ssl_require=True,
     )
+    DATABASES["default"]["OPTIONS"] = {
+    "connect_timeout": 30,
+     }
 else:
     # PostgreSQL local
     DATABASES["default"] = {
